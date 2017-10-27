@@ -110,7 +110,7 @@
               isShow: 0,
               icon: "el-icon-erp-zixunguanli"
             },
-            itemList: [{name: "资讯列表", path: "5-1", is: [99], isShow: 0}]
+            itemList: [{name: "资讯列表", path: "/infomationList", is: [99], isShow: 0}]
           },
           {
             titleList: {
@@ -136,7 +136,8 @@
             itemList: [
               {name: "优惠券管理", path: "/coupon", is: [99], isShow: 0},
               {name: "优惠券兑换", path: "/exchange", is: [99], isShow: 0},
-              {name: "积分规则", path: "/integration", is: [99], isShow: 0}
+              {name: "积分规则", path: "/integration", is: [99], isShow: 0},
+              {name: "商品积分", path: "/goodsIntegral", is: [99], isShow: 0}
             ]
           },
           {
@@ -147,7 +148,10 @@
               isShow: 0,
               icon: "el-icon-erp-wuliaoguanli"
             },
-            itemList: [{name: "物料列表", path: "8-1", is: [99, 6, 8], isShow: 0}]
+            itemList: [
+              {name: "物料列表", path: "/matterList", is: [99, 6, 8], isShow: 0},
+              {name: "物料分类", path: "/matterSort", is: [99, 6, 8], isShow: 0}
+            ]
           },
           {
             titleList: {

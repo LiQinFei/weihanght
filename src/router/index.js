@@ -31,10 +31,19 @@ import activeList from '@/components/active/activeList'
 import coupon from '@/components/salesManagement/coupon'
 import exchange from '@/components/salesManagement/exchange'
 import integration from '@/components/salesManagement/integration'
+import goodsIntegral from '@/components/salesManagement/goodsIntegral'
 
 //会员
 import memberEquity from '@/components/member/memberEquity'
 import memberList from '@/components/member/memberList'
+//资讯管理
+import infomationList from '@/components/infomation/infomationList'
+
+
+//物料管理
+
+import matterList from '@/components/matter/matterList'
+import matterSort from '@/components/matter/matterSort'
 
 Vue.use(Router)
 
@@ -125,6 +134,11 @@ export default new Router({
                 name: 'integration',
                 component: integration //积分规则
             },
+          {
+            path: 'goodsIntegral',
+            name: 'goodsIntegral',
+            component: goodsIntegral //商品积分
+          },
             {
                 path: 'memberEquity',
                 name: 'memberEquity',
@@ -133,6 +147,20 @@ export default new Router({
                 path: 'memberList',
                 name: 'memberList',
                 component: memberList //会员列表
+            },
+              {
+                path: 'infomationList',
+                  name: 'infomationList',
+                component: infomationList //资讯列表
+              },
+            {
+              path: 'matterList',
+              name: 'matterList',
+              component: matterList //物料列表
+            },{
+              path: 'matterSort',
+              name: 'matterSort',
+              component: matterSort //物料分类
             }
 
 

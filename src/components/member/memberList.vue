@@ -47,7 +47,7 @@
       </el-table-column>
       <el-table-column prop="simpleSpelling" label="简拼" width="160">
       </el-table-column>
-      <el-table-column prop="recommendCode" label="推荐人" width="160">
+      <el-table-column prop="recommenderName" label="推荐人" width="160">
       </el-table-column>
       <el-table-column prop="IntegralAccount" label="积分账户" min-width="100" show-overflow-tooltip>
       </el-table-column>
@@ -254,9 +254,10 @@
         <el-form-item label="最后访问时间" :label-width="formLabelWidth">
           <span>{{detailList.lastVisit}}</span>
         </el-form-item>
-        <el-form-item label="推荐人" :label-width="formLabelWidth">
+        <el-form-item label="推荐码" :label-width="formLabelWidth">
           <span>{{detailList.recommendCode}}</span>
         </el-form-item>
+
         <el-form-item label="删除标记" :label-width="formLabelWidth">
           <span>{{detailList.deleteMark}}</span>
         </el-form-item>

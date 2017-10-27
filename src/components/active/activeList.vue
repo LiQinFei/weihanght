@@ -22,7 +22,7 @@
         <el-form-item>
           <el-button type="primary" @click="searchGoods">查询</el-button>
         </el-form-item>
-        </el-form-item>
+
         <el-form-item>
           <el-button type="warning" @click="newVisible = true">新增活动</el-button>
         </el-form-item>
@@ -55,7 +55,7 @@
           <el-button type="text" size="small" v-if="scope.row.status != 3 && scope.row.status != 4 && scope.row.status != 5" @click="goodsSet(scope.row)">商品设置</el-button>
           <el-button @click="handleEdit(scope.row)" v-if="scope.row.status != 3 && scope.row.status != 4 && scope.row.status != 5" type="text" size="small">编辑</el-button>
           <el-button type="text" style="color:#ff4949" size="small" @click="delRow(scope.row)" v-if="scope.row.status == 5">删除</el-button>
-          </el-button>
+
         </template>
       </el-table-column>
     </el-table>
@@ -92,13 +92,13 @@
       <!-- 商品属性设置 -->
       <el-table class="goodSet" empty-text="请增加商品" ref="multipleTable" :data="goodaAttrList" border style="width: 100%;margin-top:10px">
 
-        <el-table-column prop="skuName" label="商品属性">
+        <el-table-column prop="skuName" label="sku名称">
         </el-table-column>
         <el-table-column prop="num" label="库存数量">
         </el-table-column>
         <el-table-column prop="price" label="活动价">
           <template scope="scope">
-            <el-input v-model="scope.row.price " placeholder="活动价" size="small"></el-input>
+            <el-input v-model="scope.row.price" placeholder="活动价" size="small"></el-input>
           </template>
         </el-table-column>
         <el-table-column prop="quantity" label="数量">
@@ -124,13 +124,12 @@
              <template scope="scope">
               <el-button type="text" size="small" @click="skuEdit(scope.row)">编辑</el-button>
               <el-button type="text" size="small" @click="skuDels(scope.row)">删除</el-button>
-  
             </template>
         </el-table-column>
       </el-table>
-        
-     
-      </el-table>
+
+
+
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="sendGoodsAttr">提交</el-button>
@@ -166,7 +165,7 @@
         </el-form-item>
       </el-form>
 
-      
+
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="addEdit">确 定</el-button>
@@ -192,12 +191,12 @@
         </el-form-item>
         <el-form-item label="结束时间：" :label-width="formLabelWidth">
            <span>{{attrShow1.endTime}}</span>
-          
-        
+
+
         </el-form-item>
         <el-form-item label="备注：" :label-width="formLabelWidth">
            <span>{{attrShow1.description}}</span>
-         
+
         </el-form-item>
       </el-form>
       <el-table :data="attrShow2" border style="width: 100%">
@@ -211,9 +210,9 @@
         </el-table-column>
         <el-table-column prop="sellQuantity" label="销售数量">
         </el-table-column>
-       
+
       </el-table>
-      
+
     </el-dialog>
 
 
@@ -232,11 +231,11 @@
           <el-input  v-model="skuList.quantity" auto-complete="off"></el-input>
         </el-form-item>
       </el-form>
-     
+
       <div slot="footer" class="dialog-footer">
           <el-button @click="skuEditSend">确定</el-button>
         <el-button @click="skuEditShowVisible = false">取 消</el-button>
-      
+
       </div>
     </el-dialog>
 
@@ -263,7 +262,7 @@
             <el-option label="蓝金" value="3"></el-option>
              <el-option label="白钻" value="4"></el-option>
             <el-option label="蓝钻" value="5"></el-option>
-            
+
           </el-select>
         </el-form-item>
         <el-form-item label="备注" :label-width="formLabelWidth">
@@ -719,6 +718,10 @@ export default {
 
 <style lang="scss">
 .active {
+  .el-table .cell{
+    text-align: center;
+
+  }
   .inputs {
     height: 40px;
     width: 100%;

@@ -1,6 +1,6 @@
 <template>
     <div class="commonOrder" v-loading.fullscreen.lock="fullscreenLoading">
-    
+
         <!-- 搜索 -->
         <div class="inputs">
             <el-row>
@@ -23,11 +23,11 @@
                             </el-select>
                         </el-form-item>
                         <el-form-item label="下单时间 开始">
-                            <el-date-picker v-model="search.startDate" type="date" placeholder="选择日期">
+                            <el-date-picker v-model="search.startDate" type="date" placeholder="选择日期" @change="getStartTime">
                             </el-date-picker>
                         </el-form-item>
                         <el-form-item label="下单时间 结束">
-                            <el-date-picker v-model="search.endDate" type="date" placeholder="选择日期">
+                            <el-date-picker v-model="search.endDate" type="date" @change="getEndTime" placeholder="选择日期">
                             </el-date-picker>
                         </el-form-item>
                         <el-form-item>
@@ -41,7 +41,7 @@
         <!-- 列表 -->
         <el-table ref="multipleTable" :data="tableData.dataList" border style="width: 100%" v-loading="loading">
             <el-table-column  type="index" width="51">
-            </el-table-column>    
+            </el-table-column>
             <el-table-column  prop="orderNo" label="订单号" width="150">
                 <template scope="scope">
                     <el-button type="text" size="small" @click="showDel(scope.row)">
@@ -116,10 +116,10 @@
                 </el-table>
                 <el-row style="height:200px;padding-top:20px;">
                     <el-col :span="7" style="height:200px">
-                     
+
                     </el-col>
                     <el-col :span="7" style="height:200px">
-                     
+
                     </el-col>
                     <el-col :span="7" style="height:200px" class="lists">
                         <el-form-item label="发票">
@@ -185,6 +185,14 @@ export default {
     this.getList();
   },
   methods: {
+    getStartTime(date){
+      this.search.startDate = date;
+
+    },
+    getEndTime(date){
+      this.search.endDate= date;
+
+    },
     //支付方式
     payType(data) {
       switch (data.payType) {

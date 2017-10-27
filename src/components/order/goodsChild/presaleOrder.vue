@@ -12,11 +12,11 @@
             </el-form-item>
 
             <el-form-item label="下单时间 开始">
-              <el-date-picker v-model="search.startDate" type="date" placeholder="选择日期">
+              <el-date-picker v-model="search.startDate" type="date" placeholder="选择日期" @change="getStartTime">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="下单时间 结束">
-              <el-date-picker v-model="search.endDate" type="date" placeholder="选择日期">
+              <el-date-picker v-model="search.endDate" type="date" placeholder="选择日期" @change="getEndTime">
               </el-date-picker>
             </el-form-item>
             <el-form-item>
@@ -145,6 +145,14 @@
       this.getList();
     },
     methods: {
+      getStartTime(date){
+        this.search.startDate = date;
+
+      },
+      getEndTime(date){
+        this.search.endDate= date;
+
+      },
       //支付方式
       payType(data) {
         switch (data.payType) {
