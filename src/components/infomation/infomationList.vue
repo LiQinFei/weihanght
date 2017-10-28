@@ -12,7 +12,7 @@
         </el-form-item>
         <el-form-item label="资讯类型">
           <el-select v-model="search.type">
-            <el-option label="全部" value=""></el-option>            
+            <el-option label="全部" value=""></el-option>
             <el-option label="新闻" value="1"></el-option>
             <el-option label="公告" value="2"></el-option>
           </el-select>
@@ -63,7 +63,7 @@
           <el-input v-model="newEdit.title" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="资讯类型:" :label-width="formLabelWidth">
-          <el-select v-model="newEdit.typeId">        
+          <el-select v-model="newEdit.typeId">
             <el-option label="新闻" value="1"></el-option>
             <el-option label="公告" value="2"></el-option>
           </el-select>
@@ -74,18 +74,20 @@
         <el-row :gutter="20">
           <el-col :span="10">
             <el-form-item label="PC端大图:" :label-width="formLabelWidth">
-              <el-upload class="avatar-uploader" :action="url+'/imageUpload'" name="file"  :data="datas" :show-file-list="false" :on-success="uploadSussBig" >
+              <el-upload class="avatar-uploader" :action="url+'/imageUpload'" name="file"  :data="datas" :show-file-list="false" :on-success="uploadSussBig" :before-upload="beforeAvatarUpload">
                   <img v-if="imageUrl.big" :src="imageUrl.big" class="avatar">
                   <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
+              <span style="color:red;">*只能上传jpg/png文件<br>图片宽高比例保持3:1</span>
             </el-form-item>
           </el-col>
           <el-col :span="10">
             <el-form-item label="APP端小图:" :label-width="formLabelWidth">
-               <el-upload class="avatar-uploader" :action="url+'/imageUpload'" name="file"  :data="datas" :show-file-list="false" :on-success="uploadSussSml" >
+               <el-upload class="avatar-uploader" :action="url+'/imageUpload'" name="file"  :data="datas" :show-file-list="false" :on-success="uploadSussSml"  :before-upload="beforeAvatarUpload">
                   <img v-if="imageUrl.sml" :src="imageUrl.sml" class="avatar">
                   <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
+              <span style="color:red;">*只能上传jpg/png文件<br>图片宽高比例保持3:1</span>
             </el-form-item>
           </el-col>
         </el-row>
@@ -95,19 +97,19 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="newdialogFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="sendNew">确 定</el-button>
-      
+
       </div>
     </el-dialog>
 
     <!-- 编辑弹出层 -->
     <el-dialog class="Edit" title="资讯编辑" :visible.sync="dialogFormVisible">
       <el-form :model="form">
-        
+
         <el-form-item label="资讯名称:" :label-width="formLabelWidth">
           <el-input v-model="form.title" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="资讯类型:" :label-width="formLabelWidth">
-          <el-select v-model="form.typeId" >        
+          <el-select v-model="form.typeId" >
             <el-option label="新闻" :value="1"></el-option>
             <el-option label="公告" :value="2"></el-option>
           </el-select>
@@ -134,7 +136,7 @@
             </el-form-item>
           </el-col>
         </el-row>
-  
+
 
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -151,7 +153,7 @@
         </el-form-item>
 
         <el-form-item label="资讯类型" :label-width="formLabelWidth">
-          <el-select v-model="showData.typeId" disabled>        
+          <el-select v-model="showData.typeId" disabled>
             <el-option label="新闻" :value="1"></el-option>
             <el-option label="公告" :value="2"></el-option>
           </el-select>
@@ -274,7 +276,7 @@ export default {
     },
     //新增资讯
     sendNew() {
-      
+
       // console.log(this.newEdit.typeId)
       let that = this;
       this.$http({
@@ -298,7 +300,7 @@ export default {
      //大图上传成功
     uploadSussBig(response, file, fileList) {
       this.imageUrl.big = URL.createObjectURL(file.raw);//获得本地图片路径，用户显示
-      this.newEdit.bigImg = response.data//把上传成功的路径存入数据库    
+      this.newEdit.bigImg = response.data//把上传成功的路径存入数据库
     },
     //上传小图
     uploadSussSml(response, file, fileList) {
@@ -308,7 +310,7 @@ export default {
        //大图更新成功
     editUploadSussBig(response, file, fileList) {
       this.imageUrl.big = URL.createObjectURL(file.raw);//获得本地图片路径，用户显示
-      this.form.bigImg = response.data//把上传成功的路径存入数据库    
+      this.form.bigImg = response.data//把上传成功的路径存入数据库
     },
     //小图更新成功
    editUploadSussSml(response, file, fileList) {
@@ -323,7 +325,7 @@ export default {
         url: url + "/clientSaveNewsInfo",
         data: that.form
       }).then(function(res) {
-        let data = JSON.parse(res.data);        
+        let data = JSON.parse(res.data);
         if (data.apiStatus == 1) {
           that.form = {};
           that.dialogFormVisible = false;
@@ -391,16 +393,16 @@ export default {
       }).then(function(res) {
         let data = JSON.parse(res.data).data;
         that.form = data;
-      
-   
+
+
         that.imageUrl={
          big:url+'/'+data.bigImg,
          sml:url+'/'+data.smallImg
         }
         console.log(that.form)
-        
+
       });
-      
+
     },// 显示展示
     showDel(row) {
       this.showVisible = true
@@ -419,12 +421,27 @@ export default {
          big:data.bigImg,
          sml:data.smallImg
         }
-        
+
         console.log(that.imageUrl)
       })
+    },// 只能上传jpg、png图片，且比例位3:1
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === 'image/jpeg';
+      const isPNG = file.type === 'image/png';
+      const isLt2M = file.size / 1024 / 1024 < 2;
+      var imgBili=file.innerWidth/file.innerHeigh;
+
+      if (!isJPG && !isPNG) {
+        this.$message.error('只能上传jpg/png文件!');
+      }else if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 2MB!');
+      }else if(imgBili!=3){
+        this.$message.error('图片宽高比例需要保持3:1!');
+      }
+      return  isLt2M && imgBili;
     }
-    
-    
+
+
   }
 };
 </script>
