@@ -24,15 +24,21 @@
       </el-table-column>
       <el-table-column prop="itemName" label="物料名称">
       </el-table-column>
+      <el-table-column prop="code" label="物料编码">
+      </el-table-column>
       <el-table-column prop="categoryName" label="物料分类名称">
       </el-table-column>
-      <el-table-column prop="price" label="进价">
+      <el-table-column prop="price" label="成本价">
       </el-table-column>
-      <el-table-column prop="price1" label="普通会员价">
+      <el-table-column prop="price1" label="普卡价">
       </el-table-column>
-      <el-table-column prop="price2" label="白金会员价">
+      <el-table-column prop="price2" label="金卡价">
       </el-table-column>
-      <el-table-column prop="price3" label="蓝钻会员价">
+      <el-table-column prop="price3" label="钻卡价">
+      </el-table-column>
+      <el-table-column prop="createDate" label="创建时间" min-width="130" >
+      </el-table-column>
+      <el-table-column prop="description" min-width="160" label="备注" show-overflow-tooltip>
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="150">
         <template scope="scope">
@@ -52,24 +58,30 @@
         <el-form-item label="物料名称:" :label-width="formLabelWidth">
           <el-input v-model="newEdit.itemName" auto-complete="off"></el-input>
         </el-form-item>
+        <el-form-item label="物料编码:" :label-width="formLabelWidth">
+          <el-input v-model="newEdit.code" auto-complete="off"></el-input>
+        </el-form-item>
         <el-form-item label="物料分类名称:" :label-width="formLabelWidth">
           <el-select v-model="newEdit.categoryId" placeholder="请选择">
             <el-option v-for="item in newList" :key="item.wicId" :label="item.categoryName" :value="item.wicId">
             </el-option>
           </el-select>
-          <span style="color:red">*空代表该类别为父类型</span>
+
         </el-form-item>
-        <el-form-item label="进价:" :label-width="formLabelWidth">
+        <el-form-item label="成本价:" :label-width="formLabelWidth">
           <el-input v-model="newEdit.price" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="普通价:" :label-width="formLabelWidth">
+        <el-form-item label="普卡价:" :label-width="formLabelWidth">
           <el-input v-model="newEdit.price1" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="白金价:" :label-width="formLabelWidth">
+        <el-form-item label="金卡价:" :label-width="formLabelWidth">
           <el-input v-model="newEdit.price2" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="蓝钻价:" :label-width="formLabelWidth">
+        <el-form-item label="钻卡价:" :label-width="formLabelWidth">
           <el-input v-model="newEdit.price3" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="备注:" :label-width="formLabelWidth">
+          <el-input v-model="newEdit.description" auto-complete="off"></el-input>
         </el-form-item>
 
 
@@ -77,16 +89,19 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="newdialogFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="sendNew">确 定</el-button>
-      
+
       </div>
     </el-dialog>
 
     <!-- 编辑弹出层 -->
     <el-dialog class="Edit" title="物料编辑" :visible.sync="dialogFormVisible">
       <el-form :model="form">
-        
+
         <el-form-item label="物料名称:" :label-width="formLabelWidth">
           <el-input v-model="form.itemName" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="物料编码:" :label-width="formLabelWidth">
+          <el-input v-model="form.code" auto-complete="off"></el-input>
         </el-form-item>
         <!-- <el-form-item label="物料分类名称:" :label-width="formLabelWidth">
           <el-input v-model="form.categoryId" auto-complete="off"></el-input>
@@ -96,21 +111,23 @@
             <el-option v-for="item in newList" :key="item.wicId" :label="item.categoryName" :value="item.wicId">
             </el-option>
           </el-select>
-          <span style="color:red">*空代表该类别为父类型</span>
+
         </el-form-item>
-        <el-form-item label="进价:" :label-width="formLabelWidth">
+        <el-form-item label="成本价:" :label-width="formLabelWidth">
           <el-input v-model="form.price" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="普通会员价:" :label-width="formLabelWidth">
+        <el-form-item label="普卡价:" :label-width="formLabelWidth">
           <el-input v-model="form.price1" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="白金会员价:" :label-width="formLabelWidth">
+        <el-form-item label="金卡价:" :label-width="formLabelWidth">
           <el-input v-model="form.price2" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="蓝钻会员价:" :label-width="formLabelWidth">
+        <el-form-item label="钻卡价:" :label-width="formLabelWidth">
           <el-input v-model="form.price3" auto-complete="off"></el-input>
         </el-form-item>
-
+        <el-form-item label="备注:" :label-width="formLabelWidth">
+          <el-input v-model="form.description" auto-complete="off"></el-input>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -123,222 +140,224 @@
 
 
 <script>
-export default {
-  data() {
-    return {
-      loading: true,
-      fullscreenLoading: false,
-      dialogFormVisible: false,
-      newdialogFormVisible: false,
-      formLabelWidth: "120px",
-      form: {},
-      value: "",
-      newEdit: {
-        positionName: "",
-        categoryName: "",
-        categoryId: '',
-        price: "",
-        price1: "",
-        price2: "",
-        price3: ""
-      },
-      newList: [],
-      search: {
-        pageIndex: 0,
-        pageSize: 10,
-        itemName: "",
-        categoryName: ""
-      },
-      tableData: [],
-    };
-  },
-  created() {
-    this.getList();
-  },
-  methods: {
-    getList() {  
-      this.loading = true;
-      let that = this;
-      this.$http({
-        method: "post",
-        url: url + "/browser-productItemNameFindPage",
-        data: that.search
-      }).then(function(res) {
-        that.loading = false;
-        that.tableData = JSON.parse(res.data);
-        console.log(that.tableData);
-      });
+  export default {
+    data() {
+      return {
+        loading: true,
+        fullscreenLoading: false,
+        dialogFormVisible: false,
+        newdialogFormVisible: false,
+        formLabelWidth: "120px",
+        form: {},
+        value: "",
+        newEdit: {
+          positionName: "",
+          categoryName: "",
+          categoryId: '',
+          price: "",
+          price1: "",
+          price2: "",
+          price3: "",
+          code:"",
+          description:""
+        },
+        newList: [],
+        search: {
+          pageIndex: 0,
+          pageSize: 10,
+          itemName: "",
+          categoryName: ""
+        },
+        tableData: [],
+      };
     },
-    //点击新增
-    newEdits() {
-      this.newdialogFormVisible = true;
-      this.productGetAllRootCategoryList();
-    },
-    // 获取分类列表
-    productGetAllRootCategoryList() {
-      let that = this;
-      this.$http({
-        method: "post",
-        url: url + "/clientGetMaterialCategoryId"
-      }).then(function(res) {
-        that.newList = JSON.parse(res.data).data;
-        // console.log(JSON.parse(res.data).data)
-        console.log(that.newList)
-      });
-    },
-
-    //点击分页
-    handleCurrentChange(val) {
-      this.search.pageIndex = val - 1;
+    created() {
       this.getList();
     },
-    //查询
-    searchgoods() {
-      this.getList();
-    },
-    //新增物料
-    sendNew() {
-      let that = this;
-      this.$http({
-        method: "post",
-        url: url + "/clientSaveMaterialInfo",
-        data: that.newEdit
-      }).then(function(res) {
-        let data = JSON.parse(res.data);
-        if (data.apiStatus == 1) {
-          that.newdialogFormVisible = false;
-          that.getList();
-          that.$message({
-            message: data.msg,
-            type: "success"
-          });
-        } else {
-          that.$message.error(data.msg);
-        }
-      });
-    },
-    // 编辑完成确定
-    clientProductModifySortInfo() {
-      let that = this;
-      this.$http({
-        method: "post",
-        url: url + "/clientSaveMaterialInfo",
-        data: that.form
-      }).then(function(res) {
-        let data = JSON.parse(res.data);
-        if (data.apiStatus == 1) {
-          that.form = {};
-          that.dialogFormVisible = false;
-          that.getList();
+    methods: {
+      getList() {
+        this.loading = true;
+        let that = this;
+        this.$http({
+          method: "post",
+          url: url + "/browser-productItemNameFindPage",
+          data: that.search
+        }).then(function(res) {
+          that.loading = false;
+          that.tableData = JSON.parse(res.data);
+          console.log(that.tableData);
+        });
+      },
+      //点击新增
+      newEdits() {
+        this.newdialogFormVisible = true;
+        this.productGetAllRootCategoryList();
+      },
+      // 获取分类列表
+      productGetAllRootCategoryList() {
+        let that = this;
+        this.$http({
+          method: "post",
+          url: url + "/clientGetMaterialCategoryId"
+        }).then(function(res) {
+          that.newList = JSON.parse(res.data).data;
+          // console.log(JSON.parse(res.data).data)
+          console.log(that.newList)
+        });
+      },
 
-          that.$message({
-            message: data.msg,
-            type: "success"
-          });
-        } else {
-          that.$message.error(data.msg);
-        }
-      });
-    },
-    //删除
-    del(row) {
-      console.log(row)
-      let that = this;
-      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          that.fullscreenLoading = true;
-          that.$http({
+      //点击分页
+      handleCurrentChange(val) {
+        this.search.pageIndex = val - 1;
+        this.getList();
+      },
+      //查询
+      searchgoods() {
+        this.getList();
+      },
+      //新增物料
+      sendNew() {
+        let that = this;
+        this.$http({
+          method: "post",
+          url: url + "/clientSaveMaterialInfo",
+          data: that.newEdit
+        }).then(function(res) {
+          let data = JSON.parse(res.data);
+          if (data.apiStatus == 1) {
+            that.newdialogFormVisible = false;
+            that.getList();
+            that.$message({
+              message: data.msg,
+              type: "success"
+            });
+          } else {
+            that.$message.error(data.msg);
+          }
+        });
+      },
+      // 编辑完成确定
+      clientProductModifySortInfo() {
+        let that = this;
+        this.$http({
+          method: "post",
+          url: url + "/clientSaveMaterialInfo",
+          data: that.form
+        }).then(function(res) {
+          let data = JSON.parse(res.data);
+          if (data.apiStatus == 1) {
+            that.form = {};
+            that.dialogFormVisible = false;
+            that.getList();
+
+            that.$message({
+              message: data.msg,
+              type: "success"
+            });
+          } else {
+            that.$message.error(data.msg);
+          }
+        });
+      },
+      //删除
+      del(row) {
+        console.log(row)
+        let that = this;
+        this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
+          .then(() => {
+            that.fullscreenLoading = true;
+            that.$http({
               method: "post",
               url: url + "/clientDeleteMaterial",
               data: {
                 wiId: row.wiId
               }
             })
-            .then(function(res) {
-              let data = JSON.parse(res.data);
-              if (data.apiStatus == 1) {
-                that.fullscreenLoading = false;
-                that.getList();
-                that.$message({
-                  message: data.msg,
-                  type: "success"
-                });
-              } else {
-                that.$message.error(data.msg);
-              }
+              .then(function(res) {
+                let data = JSON.parse(res.data);
+                if (data.apiStatus == 1) {
+                  that.fullscreenLoading = false;
+                  that.getList();
+                  that.$message({
+                    message: data.msg,
+                    type: "success"
+                  });
+                } else {
+                  that.$message.error(data.msg);
+                }
+              });
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消删除"
             });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
           });
-        });
-    },
-    //点击编辑按钮获取row参数
-    handleEdit(row) {
-      this.dialogFormVisible = true;
-      this.productGetAllRootCategoryList();
+      },
+      //点击编辑按钮获取row参数
+      handleEdit(row) {
+        this.dialogFormVisible = true;
+        this.productGetAllRootCategoryList();
 
-      // var _item = {}
-      // for (var i in row) {
-      //   _item[i] = row[i]
-      // }
-      // this.form = _item
-      // console.log(row)
-     
-      let that = this;
-      this.$http({
-        method: "post",
-        url: url + "/clientGetMaterialInfo",
-        data: {
-          wiId: row.wiId
-        }
-      }).then(function(res) {
-        let data = JSON.parse(res.data).data;
-        that.form = data;
-         console.log(that.form)
-      });
+        // var _item = {}
+        // for (var i in row) {
+        //   _item[i] = row[i]
+        // }
+        // this.form = _item
+        // console.log(row)
+
+        let that = this;
+        this.$http({
+          method: "post",
+          url: url + "/clientGetMaterialInfo",
+          data: {
+            wiId: row.wiId
+          }
+        }).then(function(res) {
+          let data = JSON.parse(res.data).data;
+          that.form = data;
+          console.log(that.form)
+        });
+      }
     }
-  }
-};
+  };
 </script>
 
 <style lang="scss" scoped>
 
 </style>
 <style lang="scss">
-.adPosition {
-  .el-table .cell {
-    text-align: center;
-  }
-  .inputs {
-    height: 40px;
-    width: 100%;
-    text-align: left;
-    padding-bottom: 5px;
-    .el-input {
-      height: 30px;
-      width: 180px;
-      display: inline-block;
-      input {
-        display: inline-block;
+  .adPosition {
+    .el-table .cell {
+      text-align: center;
+    }
+    .inputs {
+      height: 40px;
+      width: 100%;
+      text-align: left;
+      padding-bottom: 5px;
+      .el-input {
+        height: 30px;
         width: 180px;
-        height: 31px;
-        vertical-align: middle;
+        display: inline-block;
+        input {
+          display: inline-block;
+          width: 180px;
+          height: 31px;
+          vertical-align: middle;
+        }
+      }
+    }
+    .Edit {
+      .el-input__inner {
+        width: 200px;
       }
     }
   }
-  .Edit {
-    .el-input__inner {
-      width: 200px;
-    }
-  }
-}
 </style>
 
 

@@ -18,11 +18,11 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="申请时间 开始">
-                    <el-date-picker v-model="search.startDate" type="date" placeholder="选择日期">
+                    <el-date-picker v-model="search.startDate" type="date" placeholder="选择日期" @change="getStartTime">
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item label="申请时间 结束">
-                    <el-date-picker v-model="search.endDate" type="date" placeholder="选择日期">
+                    <el-date-picker v-model="search.endDate" type="date" placeholder="选择日期" @change="getEndTime">
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item>
@@ -33,7 +33,7 @@
         <!-- 列表 -->
         <el-table ref="multipleTable" :data="tableData.dataList" border style="width: 100%" v-loading="loading">
         <el-table-column  type="index" width="50">
-            </el-table-column>    
+            </el-table-column>
             <el-table-column  prop="realName" label="申请人" width="150" show-overflow-tooltip>
             </el-table-column>
 
@@ -97,6 +97,14 @@ export default {
     this.getList();
   },
   methods: {
+    getStartTime(date){
+      this.search.startDate = date;
+
+    },
+    getEndTime(date){
+      this.search.endDate = date;
+
+    },
     //申请类型
     subType(data) {
       switch (data.subType) {

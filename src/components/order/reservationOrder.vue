@@ -20,11 +20,11 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="预约时间 开始">
-                    <el-date-picker v-model="search.reservationDateStart" type="date" placeholder="选择日期">
+                    <el-date-picker v-model="search.reservationDateStart" type="date" placeholder="选择日期" @change="getStartTime">
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item label="预约时间 结束">
-                    <el-date-picker v-model="search.reservationDateEnd" type="date" placeholder="选择日期">
+                    <el-date-picker v-model="search.reservationDateEnd" type="date" placeholder="选择日期" @change="getEndTime">
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item>
@@ -35,7 +35,7 @@
         <!-- 列表 -->
         <el-table ref="multipleTable" :data="tableData.dataList" border style="width: 100%" v-loading="loading">
             <el-table-column  type="index" width="50">
-            </el-table-column>   
+            </el-table-column>
             <el-table-column  prop="orderNo" label="订单号" width="150">
             </el-table-column>
             <el-table-column prop="customerName" label="客户名称" width="100" show-overflow-tooltip>
@@ -50,7 +50,7 @@
             </el-table-column>
             <el-table-column prop="reservationDate" label="预约时间" width="160">
             </el-table-column>
-            <el-table-column prop="description" label="备注" min-width="100" show-overflow-tooltip> 
+            <el-table-column prop="description" label="备注" min-width="100" show-overflow-tooltip>
             </el-table-column>
             <el-table-column fixed="right" label="操作" width="150">
                 <template scope="scope">
@@ -94,6 +94,14 @@ export default {
     this.getList();
   },
   methods: {
+    getStartTime(date){
+      this.search.reservationDateStart = date;
+
+    },
+    getEndTime(date){
+      this.search.reservationDateEnd= date;
+
+    },
     //预约类型
     reservationType(data) {
       switch (data.reservationType) {

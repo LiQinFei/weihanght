@@ -49,7 +49,7 @@
       </el-table-column>
       <el-table-column prop="recommenderName" label="推荐人" width="160">
       </el-table-column>
-      <el-table-column prop="IntegralAccount" label="积分账户" min-width="100" show-overflow-tooltip>
+      <el-table-column prop="integralAccount" label="积分账户" min-width="100" show-overflow-tooltip>
       </el-table-column>
       <el-table-column prop="description" label="备注" min-width="120" show-overflow-tooltip>
       </el-table-column>
@@ -582,6 +582,7 @@
         }).then(function (res) {
           that.loading = false;
           that.tableData = JSON.parse(res.data);
+          console.log(that.tableData)
         });
       },
       //点击分页

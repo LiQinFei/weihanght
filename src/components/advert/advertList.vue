@@ -59,7 +59,7 @@
       </el-table-column>
       <el-table-column prop="endTime" label="结束时间" width="170">
       </el-table-column>
-     
+
       <el-table-column prop="createDate" label="创建日期" width="170">
       </el-table-column>
 
@@ -95,7 +95,7 @@
         <el-row :gutter="20">
             <el-col :span="10">
                 <el-form-item label="广告类型:" :label-width="formLabelWidth">
-                  <el-select v-model="form.adType" @change="isGood"> 
+                  <el-select v-model="form.adType" @change="isGood" @visible-change="isUpdwon">
                     <el-option label="链接广告" value="0"></el-option>
                     <el-option label="商品广告" value="1"></el-option>
                   </el-select>
@@ -118,7 +118,7 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="URL:" :label-width="formLabelWidth">
+        <el-form-item label="URL:" v-if="form.adType != 1" :label-width="formLabelWidth">
           <el-input v-model="form.adLink" auto-complete="off"></el-input>
         </el-form-item>
         <el-row :gutter="20">
@@ -191,7 +191,7 @@
         <el-row :gutter="20">
             <el-col :span="10">
                 <el-form-item label="广告类型:" :label-width="formLabelWidth">
-                  <el-select v-model="editData.adType" @change="isGood" @visible-change="isUpdwon"> 
+                  <el-select v-model="editData.adType" @change="isGood" @visible-change="isUpdwon">
                     <el-option label="链接广告" :value="0"></el-option>
                     <el-option label="商品广告" :value="1"></el-option>
                   </el-select>
@@ -215,7 +215,7 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="URL:" :label-width="formLabelWidth">
+        <el-form-item label="URL:" v-if="editData.adType != 1" :label-width="formLabelWidth">
           <el-input v-model="editData.adLink" auto-complete="off"></el-input>
         </el-form-item>
         <el-row :gutter="20">
@@ -317,14 +317,14 @@
 
         </el-form-item>
       </el-form>
-      
+
        <el-table  v-if="adShow.adType != 0" :data="prIn" border style="width: 100%">
         <el-table-column prop="productName" label="产品名" width="180"> </el-table-column>
-        <el-table-column  prop="productType" label="产品类型" :formatter="ProductDt"  width="180"> </el-table-column> 
+        <el-table-column  prop="productType" label="产品类型" :formatter="ProductDt"  width="180"> </el-table-column>
         <el-table-column prop="productPrice" label="价格"></el-table-column>
         <el-table-column prop="productExplain" label="简介" min-width="100" show-overflow-tooltip></el-table-column>
       </el-table>
-      
+
       <div slot="footer" class="dialog-footer">
         <el-button @click="attrShowVisible = false">取 消</el-button>
       </div>
@@ -362,7 +362,7 @@
           </el-pagination>
         </el-col>
       </el-row>
-   
+
     </el-dialog>
 
 
@@ -751,6 +751,7 @@ export default {
         data: this.goodsSearch
       }).then(function(res) {
         that.goodsList = JSON.parse(res.data);
+
       });
     },
     getGoodsAttr(row) {

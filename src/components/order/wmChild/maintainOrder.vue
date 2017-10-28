@@ -31,7 +31,7 @@
                 <el-option label="已支付" value="1"></el-option>
               </el-select>
             </el-form-item>
-           
+
             <el-form-item>
               <el-button type="primary" @click="searchgoods">查询</el-button>
             </el-form-item>
@@ -41,7 +41,7 @@
     </div>
     <el-table ref="multipleTable" :data="tableData.dataList" border style="width: 100%" v-loading="loading">
        <el-table-column  type="index" width="50">
-        </el-table-column>   
+        </el-table-column>
       <el-table-column  prop="repairNo" label="维修单号" min-width="170">
         <template scope="scope">
           <el-button type="text" size="small" @click="showDel(scope.row)">
@@ -60,7 +60,7 @@
       </el-table-column>
       <el-table-column prop="receiveDate" label="接车时间" min-width="170">
       </el-table-column>
-    
+
 
       <el-table-column fixed="right" label="操作" width="150">
         <template scope="scope">
@@ -242,7 +242,7 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="PicVisible = false">取 消</el-button>
         <el-button type="primary"  @click="surePic">确 定</el-button>
-        
+
       </div>
     </el-dialog>
 
@@ -255,10 +255,10 @@
         <el-form-item label="普卡价" :label-width="formLabelWidth">
           <el-input v-model="picEdit.price1" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="钻卡价" :label-width="formLabelWidth">
+        <el-form-item label="金卡价" :label-width="formLabelWidth">
           <el-input v-model="picEdit.price2" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="金卡价" :label-width="formLabelWidth">
+        <el-form-item label="钻卡价" :label-width="formLabelWidth">
           <el-input v-model="picEdit.price3" auto-complete="off"></el-input>
         </el-form-item>
 
