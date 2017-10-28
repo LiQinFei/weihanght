@@ -45,6 +45,17 @@ import infomationList from '@/components/infomation/infomationList'
 import matterList from '@/components/matter/matterList'
 import matterSort from '@/components/matter/matterSort'
 
+
+//系统设置
+import menuSet from '@/components/system/menuSet'
+import roleManages from '@/components/system/roleManages'
+import userManage from '@/components/system/userManage'
+import parameterSet from '@/components/system/parameterSet'
+import basicsData from '@/components/system/basicsData'
+import log from '@/components/system/log'
+
+
+
 Vue.use(Router)
 
 export default new Router({
@@ -162,10 +173,34 @@ export default new Router({
               name: 'matterSort',
               component: matterSort //物料分类
             }
+          ,{
+          path: 'menuSet',
+          name: 'menuSet',
+          component: menuSet //菜单设置
+        },{
+            path: 'roleManages',
+            name: 'roleManages',
+            component: roleManages //角色管理
+          },{
+            path: 'userManage',
+            name: 'userManage',
+            component: userManage //用户管理
+          },{
+            path: 'parameterSet',
+            name: 'parameterSet',
+            component: parameterSet //参数设置
+          },{
+            path: 'basicsData',
+            name: 'basicsData',
+            component: basicsData //基础数据
+          },{
+            path: 'log',
+            name: 'log',
+            component: log //日志管理
+          }
 
 
-
-        ]
+    ]
     }, {
         path: '/login',
         name: 'login',

@@ -162,12 +162,12 @@
               icon: "el-icon-erp-xitongguanli"
             },
             itemList: [
-              {name: "菜单设置", path: "9-1", is: [99], isShow: 0},
-              {name: "角色管理", path: "9-1", is: [99], isShow: 0},
-              {name: "用户管理", path: "9-1", is: [99], isShow: 0},
-              {name: "参数设置", path: "9-1", is: [99], isShow: 0},
-              {name: "基础数据", path: "9-1", is: [99], isShow: 0},
-              {name: "日志管理", path: "9-1", is: [99], isShow: 0}
+              {name: "菜单设置", path: "/menuSet", is: [99], isShow: 0},
+              {name: "角色管理", path: "/roleManages", is: [99], isShow: 0},
+              {name: "用户管理", path: "/userManage", is: [99], isShow: 0},
+              {name: "参数设置", path: "/parameterSet", is: [99], isShow: 0},
+              {name: "基础数据", path: "/basicsData", is: [99], isShow: 0},
+              {name: "日志管理", path: "/log", is: [99], isShow: 0}
             ]
           }
         ]
