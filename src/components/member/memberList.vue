@@ -41,6 +41,8 @@
       </el-table-column>
       <el-table-column prop="nickname" label="会员昵称" width="120" show-overflow-tooltip>
       </el-table-column>
+      <el-table-column prop="status" :formatter="status" label="状态" width="120" show-overflow-tooltip>
+      </el-table-column>
       <el-table-column prop="mobile" label="联系电话" width="130">
       </el-table-column>
       <el-table-column prop="gender" :formatter="gender" label="性别" width="90">
@@ -57,9 +59,8 @@
         <template scope="scope">
           <el-button type="text" size="small" @click="dataEidt(scope.row)">编辑</el-button>
           <el-button type="text" size="small" @click="carList(scope.row)">车辆管理</el-button>
-          <el-button type="text" size="small">修改密码</el-button>
-          <el-button type="text" size="small">无效</el-button>
-          <el-button type="text" size="small">有效</el-button>
+          <el-button type="text" v-if="scope.row.status == 2" size="small" @click="valid(scope.row,1)" style="color: #13CE66">有效</el-button>
+          <el-button type="text" size="small" v-if="scope.row.status == 1" @click="valid(scope.row,2)" style="color: #FF4949">无效</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -77,6 +78,9 @@
         </el-form-item>
         <el-form-item label="登录密码" :label-width="formLabelWidth">
           <el-input v-model="newEdit.password" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="支付密码" :label-width="formLabelWidth">
+          <el-input v-model="newEdit.paymentPassword" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="昵称" :label-width="formLabelWidth">
           <el-input v-model="newEdit.nickname" auto-complete="off"></el-input>
@@ -124,12 +128,8 @@
         <el-form-item label="备注" :label-width="formLabelWidth">
           <el-input v-model="newEdit.description" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="积分账户" :label-width="formLabelWidth">
-          <el-input v-model="newEdit.integralAccount" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="支付密码" :label-width="formLabelWidth">
-          <el-input v-model="newEdit.paymentPassword" auto-complete="off"></el-input>
-        </el-form-item>
+
+
 
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -145,9 +145,7 @@
         <el-form-item label="真实姓名" :label-width="formLabelWidth">
           <el-input v-model="form.realname" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="登录密码" :label-width="formLabelWidth">
-          <el-input v-model="form.password" auto-complete="off"></el-input>
-        </el-form-item>
+
         <el-form-item label="昵称" :label-width="formLabelWidth">
           <el-input v-model="form.nickname" auto-complete="off"></el-input>
         </el-form-item>
@@ -194,12 +192,8 @@
         <el-form-item label="备注" :label-width="formLabelWidth">
           <el-input v-model="form.description" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="积分账户" :label-width="formLabelWidth">
-          <el-input v-model="form.integralAccount" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="支付密码" :label-width="formLabelWidth">
-          <el-input v-model="form.paymentPassword" auto-complete="off"></el-input>
-        </el-form-item>
+
+
 
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -225,7 +219,7 @@
           <span v-if="detailList.gender == 2">女</span>
         </el-form-item>
         <el-form-item label="积分账户" :label-width="formLabelWidth">
-          <span>{{detailList.IntegralAccount}}</span>
+          <span>{{detailList.integralAccount}}</span>
         </el-form-item>
         <el-form-item label="生日" :label-width="formLabelWidth">
           <span>{{detailList.birthday}}</span>
@@ -368,7 +362,9 @@
         <el-form-item label="救援次数" :label-width="formLabelWidth">
           <el-input v-model="carNewData.helpCount" auto-complete="off"></el-input>
         </el-form-item>
-
+        <el-form-item label="充值金额" :label-width="formLabelWidth">
+          <el-input v-model="carNewData.accountRechargeTotal" auto-complete="off"></el-input>
+        </el-form-item>
         <el-form-item label="备注" :label-width="formLabelWidth">
           <el-input v-model="carNewData.description" auto-complete="off"></el-input>
         </el-form-item>
@@ -523,7 +519,7 @@
           carVin:'',
           giveCount:'',
           helpCount:'',
-
+          accountRechargeTotal:""
 
         },
         newEdit: {
@@ -568,6 +564,18 @@
             break;
           case 2:
             return "女";
+            break;
+
+        }
+      },
+      status(data) {
+        //taxStatus 布尔值
+        switch (data.status) {
+          case 1:
+            return "有效";
+            break;
+          case 2:
+            return "失效";
             break;
 
         }
@@ -618,6 +626,43 @@
             } else {
               that.$message.error(res.data.msg);
             }
+          });
+        })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消删除"
+            });
+          });
+      },
+      //改变状态
+
+      valid(row,status ){
+        let that = this;
+        this.$confirm("是否确定?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }).then(() => {
+          that.$http({
+            method: "post",
+            url: url + "/clientAddOrEditCustomer",
+            data: {
+              cId: row.cId,
+              status:status
+            }
+          }).then(function (res) {
+            let datas = JSON.parse(res.data)
+            if (datas.apiStatus == 1) {
+              that.getList();
+              that.$message({
+                message: datas.msg,
+                type: "success"
+              });
+            } else {
+              that.$message.error(datas.msg);
+            }
+            console.log(datas)
           });
         })
           .catch(() => {

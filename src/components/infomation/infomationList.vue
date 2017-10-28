@@ -429,8 +429,8 @@ export default {
       const isJPG = file.type === 'image/jpeg';
       const isPNG = file.type === 'image/png';
       const isLt2M = file.size / 1024 / 1024 < 2;
-      var imgBili=file.innerWidth/file.innerHeigh;
-
+      let imgBili = (file.innerWidth/file.innerHeigh) == 3;
+      console.log(imgBili)
       if (!isJPG && !isPNG) {
         this.$message.error('只能上传jpg/png文件!');
       }else if (!isLt2M) {
@@ -438,7 +438,7 @@ export default {
       }else if(imgBili!=3){
         this.$message.error('图片宽高比例需要保持3:1!');
       }
-      return  isLt2M && imgBili;
+      return  isLt2M && imgBili && (isJPG || isPNG);
     }
 
 

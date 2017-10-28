@@ -7,29 +7,7 @@
     <!-- 搜索 -->
     <div class="inputs">
       <el-form :inline="true" :model="search" class="demo-form-inline">
-        <el-form-item label="车牌号">
-          <el-input v-model="search.carNo" placeholder="请输入"></el-input>
-        </el-form-item>
-        <el-form-item label="预约订单状态">
-          <el-select v-model="search.orderStatus" placeholder="全部">
-            <el-option label="全部" value=""></el-option>
-            <el-option label="未确认" value="1"></el-option>
-            <el-option label="已确认" value="2"></el-option>
-            <el-option label="已取消" value="3"></el-option>
-            <el-option label="已完成" value="4"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="预约时间 开始">
-          <el-date-picker v-model="search.reservationDateStart" type="date" placeholder="选择日期">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="预约时间 结束">
-          <el-date-picker v-model="search.reservationDateEnd" type="date" placeholder="选择日期">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="searchgoods">查询</el-button>
-        </el-form-item>
+
         <el-form-item>
           <el-button type="warning" @click="newVisible = true">新增权益</el-button>
         </el-form-item>
@@ -47,9 +25,9 @@
           </el-button>
         </template>
       </el-table-column>
-      <el-table-column prop="level" :formatter="level" label="等级" width="90">
+      <el-table-column prop="level" label="等级" width="90">
       </el-table-column>
-      <el-table-column prop="upgradeTotal" label="权益审计接线" width="130">
+      <el-table-column prop="upgradeTotal" label="权益升级界限" width="130">
       </el-table-column>
       <el-table-column prop="enabledMark" label="有效标志" :formatter="enabledMark" width="160">
       </el-table-column>
@@ -77,13 +55,8 @@
         </el-form-item>
 
         <el-form-item label="等级" :label-width="formLabelWidth">
-          <el-select v-model="newEdit.level" placeholder="选择活动等级">
-            <el-option label="普通" :value="1"></el-option>
-            <el-option label="白金" :value="2"></el-option>
-            <el-option label="蓝金" :value="3"></el-option>
-            <el-option label="白钻" :value="4"></el-option>
-            <el-option label="蓝钻" :value="5"></el-option>
-          </el-select>
+
+          <el-input v-model="newEdit.level" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="图标" :label-width="formLabelWidth">
           <el-upload class="avatar-uploader" :action="url+'/imageUpload'" name="file" :data="datas" :show-file-list="false" :on-success="uploadSuss">
@@ -113,13 +86,7 @@
           <el-input v-model="form.benefitName" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="等级" :label-width="formLabelWidth">
-          <el-select v-model="form.level" placeholder="选择活动等级">
-            <el-option label="普通" :value="1"></el-option>
-            <el-option label="白金" :value="2"></el-option>
-            <el-option label="蓝金" :value="3"></el-option>
-            <el-option label="白钻" :value="4"></el-option>
-            <el-option label="蓝钻" :value="5"></el-option>
-          </el-select>
+          <el-input v-model="form.level" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="图标" :label-width="formLabelWidth">
           <el-upload class="avatar-uploader" :action="url+'/imageUpload'" name="file" :data="datas" :show-file-list="false" :on-success="edituploadSuss">
@@ -138,7 +105,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="editVisible = false">取 消</el-button>
-        <el-button type="primary" @click="sendNewAdd">确 定</el-button>
+        <el-button type="primary" @click="editSure">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -217,26 +184,7 @@
       this.getList();
     },
     methods: {
-      //预约类型
-      level(data) {
-        switch (data.level) {
-          case 1:
-            return "普通";
-            break;
-          case 2:
-            return "白金";
-            break;
-          case 3:
-            return "蓝金";
-            break;
-          case 4:
-            return "白钻";
-            break;
-          case 4:
-            return "蓝钻";
-            break;
-        }
-      },
+
       //预约状态
       enabledMark(data) {
         switch (data.enabledMark) {
@@ -309,7 +257,7 @@
           });
       },
 //      有效无效
-      enabled(row,status){
+      enabled(row, status) {
         let that = this;
         this.$confirm("是否更改?", "提示", {
           confirmButtonText: "确定",
@@ -323,7 +271,7 @@
                 url: url + "/clientUpdateAccountBenefitStatus",
                 data: {
                   abId: row.abId,
-                  status:status
+                  status: status
                 }
               })
               .then(function (res) {
@@ -355,6 +303,27 @@
         }).then(function (res) {
           if (res.data.apiStatus == 1) {
             that.newVisible = false
+            that.getList();
+            that.$message({
+              message: res.data.msg,
+              type: "success"
+            });
+          } else {
+            that.$message.error(res.data.msg);
+          }
+        });
+      },
+      //确定编辑
+      editSure() {
+        let that = this
+        this.$http({
+          method: "post",
+          url: url + "/clientModifyAccountBenefit",
+          data: this.form
+        }).then(function (res) {
+
+          if (res.data.apiStatus == 1) {
+            that.editVisible = false
             that.getList();
             that.$message({
               message: res.data.msg,

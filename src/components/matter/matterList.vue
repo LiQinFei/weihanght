@@ -44,7 +44,6 @@
         <template scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small">编辑</el-button>
           <el-button type="text" size="small" @click="del(scope.row)">删除</el-button>
-
         </template>
       </el-table-column>
     </el-table>
