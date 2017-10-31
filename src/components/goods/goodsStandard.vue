@@ -20,7 +20,7 @@
     </div>
 
     <el-table ref="multipleTable" @selection-change="handleSelectionChange" :data="tableData.dataList" border style="width: 100%" v-loading="loading">
-      <el-table-column type="index" width="50">
+      <el-table-column type="index" width="51">
       </el-table-column>
       <el-table-column prop="attrName" label="规格名称" width="100" show-overflow-tooltip>
       </el-table-column>
@@ -47,11 +47,11 @@
 
     <!-- 编辑弹出层 -->
     <el-dialog title="规格编辑" :visible.sync="dialogFormVisible">
-      <el-form>
-        <el-form-item label="规格名称" :label-width="formLabelWidth">
+      <el-form :model="form" :rules="rules" ref="form">
+        <el-form-item label="规格名称" :label-width="formLabelWidth" prop="attrName">
           <el-input v-model="form.attrName" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="商品名称" :label-width="formLabelWidth">
+        <el-form-item label="商品名称" :label-width="formLabelWidth" prop="categoryId">
           <el-select v-model="form.categoryId" placeholder="请选择">
             <el-option-group v-for="group in treeList" :key="group.label" :label="group.label">
               <el-option v-for="item in group.children" :key="item.id" :label="item.label" :value="item.id">
@@ -84,20 +84,18 @@
 
     <!-- 新增规格 -->
     <el-dialog title="新增规格" :visible.sync="newVisible">
-      <el-form>
-        <el-form-item label="规格名称" :label-width="formLabelWidth">
+      <el-form :model="newData" :rules="rules" ref="newData">
+        <el-form-item label="规格名称" :label-width="formLabelWidth" prop="attrName">
           <el-input v-model="newData.attrName" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="所属类别" :label-width="formLabelWidth">
+        <el-form-item label="所属类别" :label-width="formLabelWidth" prop="categoryId">
           <el-select v-model="newData.categoryId" placeholder="请选择">
             <el-option-group v-for="group in treeList" :key="group.label" :label="group.label">
               <el-option v-for="item in group.children" :key="item.id" :label="item.label" :value="item.id">
               </el-option>
             </el-option-group>
           </el-select>
-
         </el-form-item>
-
         <el-form-item label="备注" :label-width="formLabelWidth">
           <el-input type="textarea" v-model="newData.description"></el-input>
         </el-form-item>
@@ -131,7 +129,8 @@
           <el-tag :key="tag.vId" v-for="tag in dynamicTags" :closable="true" :close-transition="false" @close="handleClose(tag)">
             {{tag.valueName}}
           </el-tag>
-          <el-input class="input-new-tag" v-if="inputVisible" v-model="inputValue" ref="saveTagInput" size="mini" @keyup.enter.native="handleInputConfirm" @blur="handleInputConfirm">
+          <el-input class="input-new-tag" v-if="inputVisible" v-model="inputValue" ref="saveTagInput" size="mini" @keyup.enter.native="handleInputConfirm"
+                    @blur="handleInputConfirm">
           </el-input>
           <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
         </el-form-item>
@@ -144,246 +143,210 @@
 
 
 <script>
-export default {
-  data() {
-    return {
-      dynamicTags: [],
-      inputVisible: false,
-      inputValue: "",
-      checkedCities: [],
-      loading: true,
-      fullscreenLoading: false,
-      dialogVisible: false,
-      dialogFormVisible: false,
-      newVisible: false,
-      addAttryVisible: false,
-      formLabelWidth: "120px",
-      search: {
-        pageIndex: 0,
-        pageSize: 20,
-        attrName: ""
-      },
-      form: {},
-      input: "",
-      tableData: [],
-      newEdit: {},
-      newData: {
-        categoryId: "",
-        description: "",
-        attrName: "",
-        isRequired: 2,
-        isChx: 2,
-        isSellAttr: 2,
-        isMainAttr: 2,
-        isColor: 2,
-        isCommonAttr: 2,
-        isSearch: 2
-      },
-      treeList: [],
-      multipleSelection: [],
-      checkList: [],
-      addAttrData: {
-        attrName: "",
-        attrId: ""
-      },
-      AttrdataList: []
-    };
-  },
-  created() {
-    this.getList();
-  },
-  methods: {
-    handleClose(tag) {
-      console.log(tag);
-      let that = this;
-      // this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
-
-      this.$http({
-        method: "post",
-        url: url + "/clientProductDeleteAttrValue",
-        data: {
-          attrValueId: tag.vId
+  export default {
+    data() {
+      return {
+        dynamicTags: [],
+        inputVisible: false,
+        inputValue: "",
+        checkedCities: [],
+        loading: true,
+        fullscreenLoading: false,
+        dialogVisible: false,
+        dialogFormVisible: false,
+        newVisible: false,
+        addAttryVisible: false,
+        formLabelWidth: "120px",
+        search: {
+          pageIndex: 0,
+          pageSize: 20,
+          attrName: ""
+        },
+        form: {},
+        input: "",
+        tableData: [],
+        newEdit: {},
+        newData: {
+          categoryId: "",
+          description: "",
+          attrName: "",
+          isRequired: 2,
+          isChx: 2,
+          isSellAttr: 2,
+          isMainAttr: 2,
+          isColor: 2,
+          isCommonAttr: 2,
+          isSearch: 2
+        },
+        treeList: [],
+        multipleSelection: [],
+        checkList: [],
+        addAttrData: {
+          attrName: "",
+          attrId: ""
+        },
+        AttrdataList: [],
+        rules: {
+          attrName: [
+            {required: true, message: "不能为空"}
+          ],
+          categoryId: [
+            {required: true, message: "不能为空"}
+          ]
         }
-      }).then(function(res) {
-        // console.log(categoryId)
-        let datas = JSON.parse(res.data).apiStatus;
-        if (datas == 1) {
-          that.getAddrlsit();
-        }
-      });
+      };
     },
-
-    showInput() {
-      this.inputVisible = true;
-
-      this.$nextTick(_ => {
-        this.$refs.saveTagInput.$refs.input.focus();
-        // console.log(8)
-      });
+    created() {
+      this.getList();
     },
+    methods: {
+      handleClose(tag) {
+        console.log(tag);
+        let that = this;
+        // this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
 
-    handleInputConfirm(tag) {
-      console.log(this.addAttrData);
-
-      var that = this;
-      let inputValue = this.inputValue;
-      console.log(inputValue);
-      if (inputValue) {
         this.$http({
           method: "post",
-          url: url + "/clientProductAddAttrValue",
+          url: url + "/clientProductDeleteAttrValue",
           data: {
-            attrId: that.addAttrData.attrId,
-            valueName: inputValue,
-            categoryId: that.addAttrData.categoryId
+            attrValueId: tag.vId
           }
-        }).then(function(res) {
+        }).then(function (res) {
           // console.log(categoryId)
-          if (res.data.apiStatus == 1) {
+          let datas = JSON.parse(res.data).apiStatus;
+          if (datas == 1) {
             that.getAddrlsit();
           }
         });
+      },
 
-        this.dynamicTags.push(inputValue);
-      }
-      this.inputVisible = false;
-      this.inputValue = "";
-    },
-    EditAttr(row) {
-      this.addAttrData = row;
+      showInput() {
+        this.inputVisible = true;
 
-      this.addAttryVisible = true;
-      this.getAddrlsit();
-    },
-    //获取attr属性
-    getAddrlsit() {
-      var that = this;
-      this.$http({
-        method: "post",
-        url: url + "/clientProductFindAttrValueListByAttrId",
-        data: {
-          attrId: that.addAttrData.attrId
+        this.$nextTick(_ => {
+          this.$refs.saveTagInput.$refs.input.focus();
+          // console.log(8)
+        });
+      },
+
+      handleInputConfirm(tag) {
+        console.log(this.addAttrData);
+
+        var that = this;
+        let inputValue = this.inputValue;
+        console.log(inputValue);
+        if (inputValue) {
+          this.$http({
+            method: "post",
+            url: url + "/clientProductAddAttrValue",
+            data: {
+              attrId: that.addAttrData.attrId,
+              valueName: inputValue,
+              categoryId: that.addAttrData.categoryId
+            }
+          }).then(function (res) {
+            // console.log(categoryId)
+            if (res.data.apiStatus == 1) {
+              that.getAddrlsit();
+            }
+          });
+
+          this.dynamicTags.push(inputValue);
         }
-      }).then(function(res) {
-        that.dynamicTags = res.data.data;
-      });
-    },
-    judge(data) {
-      //taxStatus 布尔值
-      return data.skuName == 1 ? "销售类" : "非销售类";
-    },
-    getList() {
-      this.loading = true;
-      let that = this;
-      this.$http({
-        method: "post",
-        url: url + "/clientProductAttrFindPage",
-        data: that.search
-      }).then(function(res) {
-        that.loading = false;
-        that.tableData = JSON.parse(res.data);
-      });
-    },
-    //查询搜索
-    getSearch() {
-      this.getList();
-    },
-    //分页
-    handleCurrentChange(val) {
-      this.search.pageIndex = val - 1;
-      this.getList();
-    },
-    //新增商品
-    newEdits() {
-      this.checkedCities = [];
-      this.getTree();
-      this.newVisible = true;
-    },
-    //获取数列表
-    getTree() {
-      let that = this;
-      this.$http({
-        method: "post",
-        url: url + "/clientProductCategoryTreeData"
-      }).then(function(res) {
-        that.treeList = JSON.parse(res.data);
-      });
-    },
-    // 新增发送
-    sendNewGoods() {
-      for (var key in this.newData) {
-        for (var i = 0; i < this.checkedCities.length; i++) {
-          if (key == this.checkedCities[i]) {
-            this.newData[key] = 1;
+        this.inputVisible = false;
+        this.inputValue = "";
+      },
+      EditAttr(row) {
+        this.addAttrData = row;
+
+        this.addAttryVisible = true;
+        this.getAddrlsit();
+      },
+      //获取attr属性
+      getAddrlsit() {
+        var that = this;
+        this.$http({
+          method: "post",
+          url: url + "/clientProductFindAttrValueListByAttrId",
+          data: {
+            attrId: that.addAttrData.attrId
+          }
+        }).then(function (res) {
+          that.dynamicTags = res.data.data;
+        });
+      },
+      judge(data) {
+        //taxStatus 布尔值
+        return data.skuName == 1 ? "销售类" : "非销售类";
+      },
+      getList() {
+        this.loading = true;
+        let that = this;
+        this.$http({
+          method: "post",
+          url: url + "/clientProductAttrFindPage",
+          data: that.search
+        }).then(function (res) {
+          that.loading = false;
+          that.tableData = JSON.parse(res.data);
+        });
+      },
+      //查询搜索
+      getSearch() {
+        this.getList();
+      },
+      //分页
+      handleCurrentChange(val) {
+        this.search.pageIndex = val - 1;
+        this.getList();
+      },
+      //新增商品
+      newEdits() {
+        this.newData = {
+          categoryId: "",
+          description: "",
+          attrName: "",
+          isRequired: 2,
+          isChx: 2,
+          isSellAttr: 2,
+          isMainAttr: 2,
+          isColor: 2,
+          isCommonAttr: 2,
+          isSearch: 2
+        }
+        this.checkedCities = [];
+        this.getTree();
+        this.newVisible = true;
+      },
+      //获取数列表
+      getTree() {
+        let that = this;
+        this.$http({
+          method: "post",
+          url: url + "/clientProductCategoryTreeData"
+        }).then(function (res) {
+          that.treeList = JSON.parse(res.data);
+        });
+      },
+      // 新增发送
+      sendNewGoods() {
+        for (var key in this.newData) {
+          for (var i = 0; i < this.checkedCities.length; i++) {
+            if (key == this.checkedCities[i]) {
+              this.newData[key] = 1;
+            }
           }
         }
-      }
-      let that = this;
-      this.$http({
-        method: "post",
-        url: url + "/clientProductAddOrEditAttr",
-        data: that.newData
-      }).then(function(res) {
-        if (res.data.apiStatus == 1) {
-          that.newVisible = false;
-          that.getList();
-
-          that.$message({
-            message: res.data.msg,
-            type: "success"
-          });
-        } else {
-          that.$message.error(res.data.msg);
-        }
-      });
-    },
-    //编辑发送
-    sendEdit() {
-      var that = this;
-      for (let i in this.form) {
-        for (let x = 0; x < this.checkedCities.length; x++) {
-          if (i == this.checkedCities[x]) {
-            this.form[i] = 1;
-          }
-        }
-      }
-      this.$http({
-        method: "post",
-        url: url + "/clientProductAddOrEditAttr",
-        data: that.form
-      }).then(function(res) {
-        if (res.data.apiStatus == 1) {
-          that.dialogFormVisible = false;
-          that.getList();
-          that.$message({
-            message: res.data.msg,
-            type: "success"
-          });
-        } else {
-          that.$message.error(res.data.msg);
-        }
-      });
-    },
-    del(row) {
-      let that = this;
-      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          that.fullscreenLoading = true;
-          that
-            .$http({
+        let that = this;
+        this.$refs.newData.validate(valid => {
+          if (valid) {
+            this.$http({
               method: "post",
-              url: url + "/clientProductDeleteAttrByAttrId",
-              data: {
-                attrId: row.attrId
-              }
-            })
-            .then(function(res) {
+              url: url + "/clientProductAddOrEditAttr",
+              data: that.newData
+            }).then(function (res) {
               if (res.data.apiStatus == 1) {
-                that.fullscreenLoading = false;
+                that.newVisible = false;
                 that.getList();
                 that.$message({
                   message: res.data.msg,
@@ -393,71 +356,141 @@ export default {
                 that.$message.error(res.data.msg);
               }
             });
+          } else {
+            that.$message.error("请输入正确的格式");
+          }
         })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
-        });
-    },
-    //编辑商品
-    handleEdit(row) {
-      console.log(row);
-
-      this.getTree();
-      this.checkedCities = [];
-      this.dialogFormVisible = true;
-      var _item = {};
-      for (var i in row) {
-        _item[i] = row[i];
-      }
-      this.form = _item;
-      var i = 0;
-      for (var key in this.form) {
-        if (this.form[key] == 1) {
-          this.checkedCities[i] = key;
-          this.form[key] = 2;
-          i++;
+      },
+      //编辑发送
+      sendEdit() {
+        var that = this;
+        for (let i in this.form) {
+          for (let x = 0; x < this.checkedCities.length; x++) {
+            if (i == this.checkedCities[x]) {
+              this.form[i] = 1;
+            }
+          }
         }
+        this.$refs.form.validate(valid => {
+          if (valid) {
+            this.$http({
+              method: "post",
+              url: url + "/clientProductAddOrEditAttr",
+              data: that.form
+            }).then(function (res) {
+              if (res.data.apiStatus == 1) {
+                that.dialogFormVisible = false;
+                that.getList();
+                that.$message({
+                  message: res.data.msg,
+                  type: "success"
+                });
+              } else {
+                that.$message.error(res.data.msg);
+              }
+            });
+          } else {
+            that.$message.error("请输入正确的格式");
+
+          }
+        })
+
+
+      },
+      del(row) {
+        let that = this;
+        this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
+          .then(() => {
+            that.fullscreenLoading = true;
+            that
+              .$http({
+                method: "post",
+                url: url + "/clientProductDeleteAttrByAttrId",
+                data: {
+                  attrId: row.attrId
+                }
+              })
+              .then(function (res) {
+                if (res.data.apiStatus == 1) {
+                  that.fullscreenLoading = false;
+                  that.getList();
+                  that.$message({
+                    message: res.data.msg,
+                    type: "success"
+                  });
+                } else {
+                  that.$message.error(res.data.msg);
+                }
+              });
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消删除"
+            });
+          });
+      },
+      //编辑商品
+      handleEdit(row) {
+        console.log(row);
+
+        this.getTree();
+        this.checkedCities = [];
+        this.dialogFormVisible = true;
+        var _item = {};
+        for (var i in row) {
+          _item[i] = row[i];
+        }
+        this.form = _item;
+        var i = 0;
+        for (var key in this.form) {
+          if (this.form[key] == 1) {
+            this.checkedCities[i] = key;
+            this.form[key] = 2;
+            i++;
+          }
+        }
+      },
+      handleSelectionChange(val) {
+        this.multipleSelection = val;
       }
-    },
-    handleSelectionChange(val) {
-      this.multipleSelection = val;
     }
-  }
-};
+  };
 </script>
 
 <style lang="scss" scoped>
 
 </style>
 <style lang="scss">
-.goodsStandard {
-  .el-tag {
-    margin-left: 5px;
-  }
-  .el-table .cell {
-    text-align: center;
-  }
-  .inputs {
-    height: 40px;
-    width: 100%;
-    text-align: left;
-    padding-bottom: 5px;
-    .el-input {
-      height: 30px;
-      width: 180px;
-      display: inline-block;
-      input {
-        display: inline-block;
+  .goodsStandard {
+    .el-tag {
+      margin-left: 5px;
+    }
+    .el-table .cell {
+      text-align: center;
+    }
+    .inputs {
+      height: 40px;
+      width: 100%;
+      text-align: left;
+      padding-bottom: 5px;
+      .el-input {
+        height: 30px;
         width: 180px;
-        height: 31px;
-        vertical-align: middle;
+        display: inline-block;
+        input {
+          display: inline-block;
+          width: 180px;
+          height: 31px;
+          vertical-align: middle;
+        }
       }
     }
   }
-}
 </style>
 
 

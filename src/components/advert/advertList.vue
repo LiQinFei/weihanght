@@ -118,7 +118,7 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="URL:" v-if="form.adType != 1" :label-width="formLabelWidth">
+        <el-form-item label="URL:" v-if="form.adType != 2" :label-width="formLabelWidth">
           <el-input v-model="form.adLink" auto-complete="off"></el-input>
         </el-form-item>
         <el-row :gutter="20">
@@ -154,7 +154,7 @@
         </el-row>
 
         <el-form-item label="上传图片" :label-width="formLabelWidth">
-          <el-upload class="avatar-uploader" :action="url+'/imageUpload'" name="file" :data="datas" :show-file-list="false" :on-success="uploadSussEdit">
+          <el-upload class="avatar-uploader" :action="url+'/imageUpload'" name="file" :data="datas" :show-file-list="false" :on-success="uploadSussNew">
             <img v-if="imageUrl" :src="imageUrl" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
@@ -215,7 +215,7 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="URL:" v-if="editData.adType != 1" :label-width="formLabelWidth">
+        <el-form-item label="URL:" v-if="editData.adType != 2" :label-width="formLabelWidth">
           <el-input v-model="editData.adLink" auto-complete="off"></el-input>
         </el-form-item>
         <el-row :gutter="20">
@@ -684,11 +684,16 @@ export default {
       });
     },
 
-    // 点击下拉框去请求详情
-
-    uploadSussEdit(response, file, fileList) {
+    // 新增图片
+    uploadSussNew(response, file, fileList) {
       this.imageUrl = URL.createObjectURL(file.raw);
       this.editData.img = response.data;
+      console.log(this.form.img);
+    },
+    //编辑图片
+    uploadSussEdit(response, file, fileList) {
+      this.imageUrl = URL.createObjectURL(file.raw);
+      this.form.img = response.data;
       console.log(this.form.img);
     },
     // 展示弹出

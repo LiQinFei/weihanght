@@ -18,9 +18,9 @@
       </el-form>
     </div>
     <el-table ref="multipleTable" @selection-change="handleSelectionChange" :data="tableData.dataList" border style="width: 100%" v-loading="loading">
-      <el-table-column type="index" width="50">
+      <el-table-column type="index" width="51">
       </el-table-column>
-      <el-table-column prop="brandName" label="品牌名称"  width="150" show-overflow-tooltip>
+      <el-table-column prop="brandName" label="品牌名称" width="150" show-overflow-tooltip>
         <template scope="scope">
           <el-button type="text" size="small" @click="showDel(scope.row)">
             {{scope.row.brandName}}
@@ -44,11 +44,11 @@
 
     <!-- 编辑弹出层 -->
     <el-dialog title="商品品牌" :visible.sync="dialogFormVisible">
-      <el-form :model="form">
-        <el-form-item label="品牌名称" :label-width="formLabelWidth" >
+      <el-form :model="form" :rules="rules" ref="form">
+        <el-form-item label="品牌名称" :label-width="formLabelWidth" prop="brandName">
           <el-input v-model="form.brandName" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="商品名称" :label-width="formLabelWidth">
+        <el-form-item label="商品名称" :label-width="formLabelWidth" prop="categoryIds">
           <el-select v-model="form.categoryIds" multiple placeholder="请选择">
             <el-option-group v-for="group in treeList" :key="group.label" :label="group.label">
               <el-option v-for="item in group.children" :key="item.id" :label="item.label" :value="item.id">
@@ -56,7 +56,7 @@
             </el-option-group>
           </el-select>
         </el-form-item>
-        <el-form-item label="上传图片" :label-width="formLabelWidth">
+        <el-form-item label="上传图片" :label-width="formLabelWidth" prop="brandLogoUrl">
           <el-upload class="avatar-uploader" :action="url+'/imageUpload'" name="file" :data="datas" :show-file-list="false" :on-success="uploadSussEdit">
             <img v-if="imageUrl" :src="imageUrl" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -73,11 +73,11 @@
     </el-dialog>
     <!-- 新增品牌 -->
     <el-dialog title="新增品牌" :visible.sync="newVisible">
-      <el-form :model="newEdit" enctype="multipart/form-data">
-        <el-form-item label="品牌名称" :label-width="formLabelWidth">
+      <el-form :model="newEdit" :rules="rules" ref="newEdit">
+        <el-form-item label="品牌名称" :label-width="formLabelWidth" prop="brandName">
           <el-input v-model="newEdit.brandName" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="所属类别" :label-width="formLabelWidth">
+        <el-form-item label="所属类别" :label-width="formLabelWidth" prop="categoryIds">
           <el-select v-model="newEdit.categoryIds" multiple placeholder="请选择">
             <el-option-group v-for="group in treeList" :key="group.label" :label="group.label">
               <el-option v-for="item in group.children" :key="item.id" :label="item.label" :value="item.id">
@@ -85,7 +85,7 @@
             </el-option-group>
           </el-select>
         </el-form-item>
-        <el-form-item label="上传图片" :label-width="formLabelWidth">
+        <el-form-item label="上传图片" :label-width="formLabelWidth" prop="brandLogoUrl">
 
           <el-upload class="avatar-uploader" :action="url+'/imageUpload'" name="file" :data="datas" :show-file-list="false" :on-success="uploadSuss">
             <img v-if="imageUrl" :src="imageUrl" class="avatar">
@@ -128,146 +128,99 @@
 
 
 <script>
-export default {
-  data() {
-    return {
-      url: "",
-      loading: true,
-      fullscreenLoading: false,
-      dialogVisible: false,
-      dialogFormVisible: false,
-      newVisible: false,
-      showVisible: false,
-      formLabelWidth: "120px",
-      form: {},
-      search: {
-        pageIndex: 0,
-        pageSize: 20,
-        brandName: ""
-      },
-      treeList: [],
-      tableData: [],
-
-      newEdit: {
-        brandName: "",
-        categoryIds: "",
-        brandLogoUrl: "",
-        description: ""
-      },
-      showData: {},
-      multipleSelection: [],
-      dialogImageUrl: "",
-      dialogVisible: false,
-      imageUrl: "",
-      datas: {
-        fileType: 4
-      }
-    };
-  },
-  created() {
-    this.url = url;
-    this.getList();
-  },
-  methods: {
-    getList() {
-      this.loading = false;
-      let that = this;
-      this.$http({
-        method: "post",
-        url: url + "/clientProductBrandFindPage",
-        data: that.search
-      }).then(function(res) {
-        that.loading = false;
-        that.tableData = JSON.parse(res.data);
-      });
-    },
-    handlePictureCardPreview(file) {
-      // console.log(file.response)
-      this.dialogImageUrl = file.url;
-      this.dialogVisible = true;
-    },
-    //上传成功
-    uploadSuss(response, file, fileList) {
-      this.imageUrl = URL.createObjectURL(file.raw);
-      this.newEdit.brandLogoUrl = response.data;
-    },
-    uploadSussEdit(response, file, fileList) {
-      this.imageUrl = URL.createObjectURL(file.raw);
-      this.form.brandLogoUrl = response.data;
-    },
-    //查询搜索
-    getSearch() {
-      this.getList();
-    },
-    //新增发送接口
-
-    sendNew() {
-      let that = this;
-      this.newEdit.categoryIds = this.newEdit.categoryIds.join(",");
-      this.$http({
-        method: "post",
-        url: url + "/clientProductBrandSaveOrUpdate",
-        data: that.newEdit
-      }).then(function(res) {
-        if (res.data.apiStatus == 1) {
-          that.newVisible = false;
-          that.getList();
-          that.$message({
-            message: res.data.msg,
-            type: "success"
-          });
-        } else {
-          that.$message.error(res.data.msg);
+  export default {
+    data() {
+      return {
+        url: "",
+        loading: true,
+        fullscreenLoading: false,
+        dialogVisible: false,
+        dialogFormVisible: false,
+        newVisible: false,
+        showVisible: false,
+        formLabelWidth: "120px",
+        form: {},
+        search: {
+          pageIndex: 0,
+          pageSize: 20,
+          brandName: ""
+        },
+        treeList: [],
+        tableData: [],
+        newEdit: {
+          brandName: "",
+          categoryIds: "",
+          brandLogoUrl: "",
+          description: ""
+        },
+        showData: {},
+        multipleSelection: [],
+        dialogImageUrl: "",
+        dialogVisible: false,
+        imageUrl: "",
+        datas: {
+          fileType: 4
+        },
+        rules: {
+          brandName: [
+            {required: true, message: "不能为空"}
+          ],
+          categoryIds: [
+            {required: true, message: "不能为空"}
+          ], brandLogoUrl: [
+            {required: true, message: "不能为空"}
+          ]
         }
-      });
+      };
     },
-    handleCurrentChange(val) {
-      this.search.pageIndex = val - 1;
+    created() {
+      this.url = url;
       this.getList();
     },
-    //新增商品
-    newEdits() {
-      this.imageUrl = "";
-      this.newEdit = {
-        brandName: "",
-        categoryIds: "",
-        brandLogoUrl: "",
-        description: ""
-      };
-      this.getTree();
-      this.newVisible = true;
-    },
-    //获取数列表
-    getTree() {
-      let that = this;
-      this.$http({
-        method: "post",
-        url: url + "/clientProductCategoryTreeData"
-      }).then(function(res) {
-        that.treeList = JSON.parse(res.data);
-      });
-    },
+    methods: {
+      getList() {
+        this.loading = false;
+        let that = this;
+        this.$http({
+          method: "post",
+          url: url + "/clientProductBrandFindPage",
+          data: that.search
+        }).then(function (res) {
+          that.loading = false;
+          that.tableData = JSON.parse(res.data);
+        });
+      },
+      handlePictureCardPreview(file) {
 
-    del(row) {
-      let that = this;
-      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          that.fullscreenLoading = true;
-          that
-            .$http({
+        this.dialogImageUrl = file.url;
+        this.dialogVisible = true;
+      },
+      //上传成功
+      uploadSuss(response, file, fileList) {
+        this.imageUrl = URL.createObjectURL(file.raw);
+        this.newEdit.brandLogoUrl = response.data;
+      },
+      uploadSussEdit(response, file, fileList) {
+        this.imageUrl = URL.createObjectURL(file.raw);
+        this.form.brandLogoUrl = response.data;
+      },
+      //查询搜索
+      getSearch() {
+        this.getList();
+      },
+      //新增发送接口
+      sendNew() {
+        let that = this;
+        this.$refs.newEdit.validate(valid => {
+          if (valid) {
+            this.newEdit.categoryIds = this.newEdit.categoryIds.join(",");
+            this.$http({
               method: "post",
-              url: url + "/clientDeleteProductBrand",
-              data: {
-                brandId: row.brandId
-              }
-            })
-            .then(function(res) {
+              url: url + "/clientProductBrandSaveOrUpdate",
+              data: that.newEdit
+            }).then(function (res) {
               if (res.data.apiStatus == 1) {
-                that.fullscreenLoading = false;
+                that.newVisible = false;
                 that.getList();
                 that.$message({
                   message: res.data.msg,
@@ -277,130 +230,202 @@ export default {
                 that.$message.error(res.data.msg);
               }
             });
+          } else {
+            that.$message.error("请填写正确的格式");
+          }
         })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
-        });
-    },
-    //编辑
-    handleEdit(row) {
-      this.imageUrl = url + "/" + row.brandLogoUrl;
-      console.log(row);
-      // this.form.brandId = row.brandId;
-      this.dialogFormVisible = true;
-      this.getTree();
-      let that = this;
 
-      this.$http({
-        method: "post",
-        url: url + "/clientFindProductBrandByBrandId",
-        data: {
-          brandId: row.brandId
-        }
-      }).then(function(res) {
-        let obj = {};
-        obj = res.data.data.productBrand;
-        obj.categoryIds = res.data.data.categoryIds.split(",");
-        that.form = obj;
-      });
-    },
-    sendEdit() {
-      var that = this;
-      this.form.categoryIds = this.form.categoryIds.join(",");
-      this.$http({
-        method: "post",
-        url: url + "/clientProductBrandSaveOrUpdate",
-        data: that.form
-      }).then(function(res) {
-        if (res.data.apiStatus == 1) {
-          that.dialogFormVisible = false;
-          that.getList();
-          that.$message({
-            message: res.data.msg,
-            type: "success"
+
+      },
+      handleCurrentChange(val) {
+        this.search.pageIndex = val - 1;
+        this.getList();
+      },
+      //新增商品
+      newEdits() {
+        this.imageUrl = "";
+        this.newEdit = {
+          brandName: "",
+          categoryIds: [],
+          brandLogoUrl: "",
+          description: ""
+        };
+        this.getTree();
+        this.newVisible = true;
+      },
+      //获取数列表
+      getTree() {
+        let that = this;
+        this.$http({
+          method: "post",
+          url: url + "/clientProductCategoryTreeData"
+        }).then(function (res) {
+          that.treeList = JSON.parse(res.data);
+
+        });
+      },
+
+      del(row) {
+        let that = this;
+        this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
+          .then(() => {
+            that.fullscreenLoading = true;
+            that
+              .$http({
+                method: "post",
+                url: url + "/clientDeleteProductBrand",
+                data: {
+                  brandId: row.brandId
+                }
+              })
+              .then(function (res) {
+                if (res.data.apiStatus == 1) {
+                  that.fullscreenLoading = false;
+                  that.getList();
+                  that.$message({
+                    message: res.data.msg,
+                    type: "success"
+                  });
+                } else {
+                  that.$message.error(res.data.msg);
+                }
+              });
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消删除"
+            });
           });
-        } else {
-          that.$message.error(res.data.msg);
-        }
-      });
-    },
-    // 显示展示
-    showDel(row) {
-      this.showVisible = true;
-      let that = this;
-      this.$http({
-        method: "post",
-        url: url + "/clientFindProductBrandByBrandId",
-        data: {
-          brandId: row.brandId
-        }
-      }).then(function(res) {
-        that.showData = res.data.data.productBrand;
-        console.log(that.showData);
-      });
-    },
-    handleSelectionChange(val) {
-      this.multipleSelection = val;
-      console.log(this.multipleSelection);
+      },
+      //编辑
+      handleEdit(row) {
+        this.imageUrl = url + "/" + row.brandLogoUrl;
+
+        // this.form.brandId = row.brandId;
+        this.dialogFormVisible = true;
+        this.getTree();
+        let that = this;
+
+        this.$http({
+          method: "post",
+          url: url + "/clientFindProductBrandByBrandId",
+          data: {
+            brandId: row.brandId
+          }
+        }).then(function (res) {
+          let obj = {};
+          obj = res.data.data.productBrand;
+          obj.categoryIds = res.data.data.categoryIds.split(",")
+          that.form = obj;
+        });
+      },
+      sendEdit() {
+        var that = this;
+        this.$refs.form.validate(valid => {
+          if (valid) {
+            this.form.categoryIds = this.form.categoryIds.join(",");
+            this.$http({
+              method: "post",
+              url: url + "/clientProductBrandSaveOrUpdate",
+              data: that.form
+            }).then(function (res) {
+              if (res.data.apiStatus == 1) {
+                that.dialogFormVisible = false;
+                that.getList();
+                that.$message({
+                  message: res.data.msg,
+                  type: "success"
+                });
+              } else {
+                that.$message.error(res.data.msg);
+              }
+            });
+          } else {
+            that.$message.error("请填写正确的格式");
+          }
+        })
+
+
+      },
+      // 显示展示
+      showDel(row) {
+        this.showVisible = true;
+        let that = this;
+        this.$http({
+          method: "post",
+          url: url + "/clientFindProductBrandByBrandId",
+          data: {
+            brandId: row.brandId
+          }
+        }).then(function (res) {
+          that.showData = res.data.data.productBrand;
+          console.log(that.showData);
+        });
+      },
+      handleSelectionChange(val) {
+        this.multipleSelection = val;
+        console.log(this.multipleSelection);
+      }
     }
-  }
-};
+  };
 </script>
 
 <style lang="scss" scoped>
-.el-table th > .cell {
-  text-align: center;
-}
-</style>
-<style lang="scss">
-.goodsBrand {
-  .avatar-uploader .el-upload {
-    border: 1px dashed #d9d9d9;
-    border-radius: 6px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .avatar-uploader .el-upload:hover {
-    border-color: #20a0ff;
-  }
-
-  .avatar-uploader-icon {
-    font-size: 28px;
-    color: #8c939d;
-    width: 178px;
-    height: 178px;
-    line-height: 178px;
+  .el-table th > .cell {
     text-align: center;
   }
+</style>
+<style lang="scss">
+  .goodsBrand {
+    .avatar-uploader .el-upload {
+      border: 1px dashed #d9d9d9;
+      border-radius: 6px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
 
-  .avatar {
-    width: 178px;
-    height: 178px;
-    display: block;
-  }
-  .inputs {
-    height: 40px;
-    width: 100%;
-    text-align: left;
-    padding-bottom: 5px;
-    .el-input {
-      height: 30px;
-      width: 180px;
-      display: inline-block;
-      input {
-        display: inline-block;
+    .avatar-uploader .el-upload:hover {
+      border-color: #20a0ff;
+    }
+
+    .avatar-uploader-icon {
+      font-size: 28px;
+      color: #8c939d;
+      width: 178px;
+      height: 178px;
+      line-height: 178px;
+      text-align: center;
+    }
+
+    .avatar {
+      width: 178px;
+      height: 178px;
+      display: block;
+    }
+    .inputs {
+      height: 40px;
+      width: 100%;
+      text-align: left;
+      padding-bottom: 5px;
+      .el-input {
+        height: 30px;
         width: 180px;
-        height: 31px;
-        vertical-align: middle;
+        display: inline-block;
+        input {
+          display: inline-block;
+          width: 180px;
+          height: 31px;
+          vertical-align: middle;
+        }
       }
     }
   }
-}
 </style>
 
 

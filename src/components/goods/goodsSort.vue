@@ -148,7 +148,6 @@
           parentId: '',
           cname: '',
           sort: ''
-
         }
         this.newVisible = true;
         this.productGetAllRootCategoryList();

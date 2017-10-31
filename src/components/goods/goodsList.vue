@@ -26,7 +26,7 @@
         </el-form-item>
         <el-form-item label="类 别">
           <el-select v-model="search.categoryId" placeholder="全部" @visible-change="getTrees">
-            <el-option-group v-for="group in treeList" :key="group.label" :label="group.label" >
+            <el-option-group v-for="group in treeList" :key="group.label" :label="group.label">
               <el-option v-for="item in group.children" :key="item.id" :label="item.label" :value="item.id">
               </el-option>
             </el-option-group>
@@ -83,7 +83,7 @@
 
     <!-- 编辑弹出层 -->
     <el-dialog title="产品编辑" :visible.sync="dialogFormVisible">
-      <el-form :model="newEdit">
+      <el-form :model="form" ref="form" :rules="rules">
         <el-form-item label="产品名称:" :label-width="formLabelWidth">
           <el-input disabled v-model="form.productName" auto-complete="off"></el-input>
         </el-form-item>
@@ -93,10 +93,10 @@
         <el-form-item label="所属品牌:" :label-width="formLabelWidth">
           <el-input disabled v-model="form.brandName" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="产品价格" :label-width="formLabelWidth">
+        <el-form-item prop="productPrice" label="产品价格" :label-width="formLabelWidth">
           <el-input v-model="form.productPrice" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="产品详情" :label-width="formLabelWidth">
+        <el-form-item prop="productDetails" label="产品详情" :label-width="formLabelWidth">
           <vue-editor v-model="form.productDetails"></vue-editor>
         </el-form-item>
         <el-form-item label="备注" :label-width="formLabelWidth">
@@ -111,7 +111,7 @@
     </el-dialog>
     <!-- 新增产品 -->
     <el-dialog title="新增产品" :visible.sync="newVisible">
-      <el-form :model="newEdit" ref="newEdit" :rules="newEditRules">
+      <el-form :model="newEdit" ref="newEdit" :rules="rules">
         <el-form-item prop="productName" label="商品名称" :label-width="formLabelWidth">
           <el-input v-model="newEdit.productName " auto-complete="off"></el-input>
         </el-form-item>
@@ -315,7 +315,7 @@
           categoryId: "",
           brandId: ""
         },
-        newEditRules: {
+        rules: {
           productName: [
             {required: true, message: "不能为空"}
             //{ validator: validaePass }
@@ -333,10 +333,6 @@
             //{ validator: validaePass }
           ],
           productDetails: [
-            {required: true, message: "不能为空"}
-            //{ validator: validaePass }
-          ],
-          description: [
             {required: true, message: "不能为空"}
             //{ validator: validaePass }
           ],
@@ -421,7 +417,7 @@
         }).then(function (res) {
           that.treeList = JSON.parse(res.data);
 
-          that.treeList.unshift({id:"",isLeaf:0,label:'请选择',isShow:'1',children:[{id:"",isLeaf:1,label:'全部'}]})
+          that.treeList.unshift({id: "", isLeaf: 0, label: '请选择', isShow: '1', children: [{id: "", isLeaf: 1, label: '全部'}]})
         });
       },
       //获取品牌
@@ -496,6 +492,8 @@
             });
           } else {
             // console.log(0);
+            that.$message.error("请填写正确的格式");
+
           }
         });
       },
@@ -517,23 +515,31 @@
       //编辑发送
       sendEdit() {
         let that = this;
-        let form = that.form;
-        this.$http({
-          method: "post",
-          url: url + "/clientProductModifyProductInfo",
-          data: form
-        }).then(function (res) {
-          if (res.data.apiStatus == 1) {
-            that.dialogFormVisible = false;
-            that.getList();
-            that.$message({
-              message: res.data.msg,
-              type: "success"
+        this.$refs.form.validate(valid => {
+          if (valid) {
+            this.$http({
+              method: "post",
+              url: url + "/clientProductModifyProductInfo",
+              data: that.form
+            }).then(function (res) {
+              if (res.data.apiStatus == 1) {
+                that.dialogFormVisible = false;
+                that.getList();
+                that.$message({
+                  message: res.data.msg,
+                  type: "success"
+                });
+              } else {
+                that.$message.error(res.data.msg);
+              }
             });
           } else {
-            that.$message.error(res.data.msg);
+            that.$message.error("请填写正确的格式");
+
           }
-        });
+        })
+
+
       },
       //新增商品
       newGoods(row) {

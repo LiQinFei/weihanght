@@ -470,6 +470,7 @@ export default {
     },
     // 设置商品属性
     sendGoodsAttr() {
+      var that = this;
       let isN = false;
       for (let i = 0; i < this.goodaAttrList.length; i++) {
         if (
@@ -480,7 +481,6 @@ export default {
           break;
         }
       }
-
       if (isN) {
         this.$message({
           showClose: true,
@@ -498,7 +498,7 @@ export default {
           };
         }
 
-        var that = this;
+
         this.$http({
           method: "post",
           url: url + "/clientAddActivityGoods",
@@ -554,7 +554,7 @@ export default {
             description: ""
           };
         } else {
-          this.$message.error(res.data.msg);
+          that.$message.error(res.data.msg);
         }
       });
     },
@@ -576,7 +576,7 @@ export default {
           that.dialogFormVisible = false;
           that.getList();
         } else {
-          this.$message.error(res.data.msg);
+          that.$message.error(res.data.msg);
         }
       });
     },
@@ -634,7 +634,7 @@ export default {
             });
         })
         .catch(() => {
-          this.$message({
+          that.$message({
             type: "info",
             message: "已取消删除"
           });
@@ -669,7 +669,7 @@ export default {
             });
         })
         .catch(() => {
-          this.$message({
+          that.$message({
             type: "info",
             message: "已取消删除"
           });
@@ -687,8 +687,7 @@ export default {
     //商品活动确定编辑
     skuEditSend() {
       let that = this;
-      that
-        .$http({
+      that.$http({
           method: "post",
           url: url + "/clientEditActivityGoods",
           data: that.skuList
