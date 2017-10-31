@@ -7,26 +7,17 @@
     <!-- 搜索 -->
     <div class="inputs">
       <el-form :inline="true" :model="search" class="demo-form-inline">
-        <el-form-item label="车牌号">
-          <el-input v-model="search.carNo" placeholder="请输入"></el-input>
+        <el-form-item label="用户名">
+          <el-input v-model="search.userName" placeholder="请输入"></el-input>
         </el-form-item>
-        <el-form-item label="预约订单状态">
-          <el-select v-model="search.orderStatus" placeholder="全部">
+        <el-form-item label="用户状态">
+          <el-select v-model="search.userStatus" placeholder="全部">
             <el-option label="全部" value=""></el-option>
-            <el-option label="未确认" value="1"></el-option>
-            <el-option label="已确认" value="2"></el-option>
-            <el-option label="已取消" value="3"></el-option>
-            <el-option label="已完成" value="4"></el-option>
+            <el-option label="在线" value="1"></el-option>
+            <el-option label="离线" value="2"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="预约时间 开始">
-          <el-date-picker v-model="search.reservationDateStart" type="date" placeholder="选择日期">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="预约时间 结束">
-          <el-date-picker v-model="search.reservationDateEnd" type="date" placeholder="选择日期">
-          </el-date-picker>
-        </el-form-item>
+
         <el-form-item>
           <el-button type="primary" @click="searchgoods">查询</el-button>
         </el-form-item>
@@ -36,22 +27,25 @@
     <el-table ref="multipleTable" :data="tableData.dataList" border style="width: 100%" v-loading="loading">
       <el-table-column  type="index" width="50">
       </el-table-column>
-      <el-table-column  prop="orderNo" label="订单号" width="150">
+      <el-table-column prop="account" label="登录账号" width="100" show-overflow-tooltip>
       </el-table-column>
-      <el-table-column prop="customerName" label="客户名称" width="100" show-overflow-tooltip>
+      <el-table-column  prop="realname" label="真实姓名" width="150">
       </el-table-column>
-      <el-table-column prop="contactsMobile" label="联系电话" width="130">
+      <el-table-column prop="simpleSpelling" label="简称" width="130">
       </el-table-column>
-      <el-table-column prop="reservationType" :formatter="reservationType" label="预约类型" width="90">
+      <el-table-column prop="gender " :formatter="gender" label="性别 " width="90">
       </el-table-column>
-      <el-table-column prop="status" label="预约状态" :formatter="status" width="160">
+      <el-table-column prop="status" label="在线状态" :formatter="userOnline" width="160">
       </el-table-column>
-      <el-table-column prop="createDate" label="创建时间" width="160">
+      <el-table-column prop="mobile" label="手机" width="160">
       </el-table-column>
-      <el-table-column prop="reservationDate" label="预约时间" width="160">
+      <el-table-column prop="dName" label="部门名称" width="160">
       </el-table-column>
-      <el-table-column prop="description" label="备注" min-width="100" show-overflow-tooltip>
+      <el-table-column prop="post" label="岗位" min-width="100" show-overflow-tooltip>
       </el-table-column>
+
+
+
       <el-table-column fixed="right" label="操作" width="150">
         <template scope="scope">
           <el-button @click="delGoods(scope.row)" v-if="scope.row.status == 5" type="text" size="small">删除</el-button>
@@ -79,10 +73,8 @@
         search: {
           pageIndex: 0,
           pageSize: 20,
-          carNo: "",
-          orderStatus: "",
-          reservationDateStart: "",
-          reservationDateEnd: ""
+          userName:"",
+          userStatus:""
         },
         tableData: [],
         showData: {},
@@ -95,36 +87,25 @@
     },
     methods: {
       //预约类型
-      reservationType(data) {
-        switch (data.reservationType) {
+      gender(data) {
+        switch (data.gender) {
           case 1:
-            return "汽车清洗";
+            return "男";
             break;
           case 2:
-            return "汽车维修";
+            return "女";
             break;
-          case 3:
-            return "汽车保养";
-            break;
-          case 4:
-            return "美容装潢";
-            break;
+
         }
       },
       //预约状态
-      status(data) {
-        switch (data.status) {
+      userOnline (data) {
+        switch (data.userOnline) {
           case 1:
-            return "未确认";
+            return "在线";
             break;
           case 2:
-            return "已确认";
-            break;
-          case 3:
-            return "已取消";
-            break;
-          case 4:
-            return "已完成";
+            return "离线";
             break;
         }
       },
@@ -133,11 +114,11 @@
         let that = this;
         this.$http({
           method: "post",
-          url: url + "/clientFindReservationOrder",
+          url: url + "/clientFindBaseUserList",
           data: that.search
         }).then(function(res) {
           that.loading = false;
-          that.tableData = JSON.parse(res.data);
+          that.tableData = res.data.data
           console.log(that.tableData);
         });
       },

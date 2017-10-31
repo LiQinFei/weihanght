@@ -40,6 +40,8 @@
             </el-table-column>
             <el-table-column prop="customerName" label="客户名称" width="100" show-overflow-tooltip>
             </el-table-column>
+          <el-table-column prop="carNo" label="车牌号" width="100" show-overflow-tooltip>
+          </el-table-column>
             <el-table-column prop="contactsMobile" label="联系电话" width="130">
             </el-table-column>
             <el-table-column prop="reservationType" :formatter="reservationType" label="预约类型" width="90">

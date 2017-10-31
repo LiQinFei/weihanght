@@ -133,7 +133,7 @@
         let that = this;
         this.$http({
           method: "post",
-          url: url + "/clientFindReservationOrder",
+          url: url + "/clientFindDataitemList",
           data: that.search
         }).then(function(res) {
           that.loading = false;

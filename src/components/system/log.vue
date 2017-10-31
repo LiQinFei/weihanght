@@ -7,26 +7,10 @@
     <!-- 搜索 -->
     <div class="inputs">
       <el-form :inline="true" :model="search" class="demo-form-inline">
-        <el-form-item label="车牌号">
-          <el-input v-model="search.carNo" placeholder="请输入"></el-input>
+        <el-form-item label="操作用户名称">
+          <el-input v-model="search.operateName" placeholder="请输入"></el-input>
         </el-form-item>
-        <el-form-item label="预约订单状态">
-          <el-select v-model="search.orderStatus" placeholder="全部">
-            <el-option label="全部" value=""></el-option>
-            <el-option label="未确认" value="1"></el-option>
-            <el-option label="已确认" value="2"></el-option>
-            <el-option label="已取消" value="3"></el-option>
-            <el-option label="已完成" value="4"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="预约时间 开始">
-          <el-date-picker v-model="search.reservationDateStart" type="date" placeholder="选择日期">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="预约时间 结束">
-          <el-date-picker v-model="search.reservationDateEnd" type="date" placeholder="选择日期">
-          </el-date-picker>
-        </el-form-item>
+
         <el-form-item>
           <el-button type="primary" @click="searchgoods">查询</el-button>
         </el-form-item>
@@ -36,22 +20,17 @@
     <el-table ref="multipleTable" :data="tableData.dataList" border style="width: 100%" v-loading="loading">
       <el-table-column  type="index" width="50">
       </el-table-column>
-      <el-table-column  prop="orderNo" label="订单号" width="150">
+      <el-table-column  prop="operateName" label="操作用户" width="150">
       </el-table-column>
-      <el-table-column prop="customerName" label="客户名称" width="100" show-overflow-tooltip>
+      <el-table-column prop="operateTime" label="操作时间"  show-overflow-tooltip>
       </el-table-column>
-      <el-table-column prop="contactsMobile" label="联系电话" width="130">
+      <el-table-column prop="ipAddress" label="IP地址" >
       </el-table-column>
-      <el-table-column prop="reservationType" :formatter="reservationType" label="预约类型" width="90">
+
+      <el-table-column prop="browser" label="浏览器" >
       </el-table-column>
-      <el-table-column prop="status" label="预约状态" :formatter="status" width="160">
-      </el-table-column>
-      <el-table-column prop="createDate" label="创建时间" width="160">
-      </el-table-column>
-      <el-table-column prop="reservationDate" label="预约时间" width="160">
-      </el-table-column>
-      <el-table-column prop="description" label="备注" min-width="100" show-overflow-tooltip>
-      </el-table-column>
+
+
       <el-table-column fixed="right" label="操作" width="150">
         <template scope="scope">
           <el-button @click="delGoods(scope.row)" v-if="scope.row.status == 5" type="text" size="small">删除</el-button>
@@ -79,10 +58,7 @@
         search: {
           pageIndex: 0,
           pageSize: 20,
-          carNo: "",
-          orderStatus: "",
-          reservationDateStart: "",
-          reservationDateEnd: ""
+          operateName:""
         },
         tableData: [],
         showData: {},
@@ -133,7 +109,7 @@
         let that = this;
         this.$http({
           method: "post",
-          url: url + "/clientFindReservationOrder",
+          url: url + "/clientFindLogListAndPaged",
           data: that.search
         }).then(function(res) {
           that.loading = false;

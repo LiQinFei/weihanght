@@ -317,35 +317,35 @@
         },
         newEditRules: {
           productName: [
-            {required: true, message: "不能为空", trigger: "blur"}
+            {required: true, message: "不能为空"}
             //{ validator: validaePass }
           ],
           productNxplain: [
-            {required: true, message: "不能为空", trigger: "blur"}
+            {required: true, message: "不能为空"}
             //{ validator: validaePass }
           ],
           productType: [
-            {required: true, message: "不能为空", trigger: "blur"}
+            {required: true, message: "不能为空"}
             //{ validator: validaePass }
           ],
           productPrice: [
-            {required: true, message: "不能为空", trigger: "blur"}
+            {required: true, message: "不能为空"}
             //{ validator: validaePass }
           ],
           productDetails: [
-            {required: true, message: "不能为空", trigger: "blur"}
+            {required: true, message: "不能为空"}
             //{ validator: validaePass }
           ],
           description: [
-            {required: true, message: "不能为空", trigger: "blur"}
+            {required: true, message: "不能为空"}
             //{ validator: validaePass }
           ],
           categoryId: [
-            {required: true, message: "不能为空", trigger: "blur"}
+            {required: true, message: "不能为空"}
             //{ validator: validaePass }
           ],
           productExplain: [
-            {required: true, message: "不能为空", trigger: "blur"}
+            {required: true, message: "不能为空"}
             //{ validator: validaePass }
           ]
         },
@@ -765,24 +765,6 @@
         this.attrPushData.values = arry;
         return arry;
       }
-    },
-    mounted() {
-      // let that = this;
-      // this.$http({
-      //   method: "post",
-      //   url: url + "/clientFindSkuInfoBySkuId",
-      //   data: that.attrPushData
-      // }).then(function(res) {
-      //   if (res.data.apiStatus == 1) {
-      //     that.$message({
-      //       message: res.data.msg,
-      //       type: "success"
-      //     });
-      //     that.getgoodsList();
-      //   } else {
-      //     that.$message.error(res.data.msg);
-      //   }
-      // });
     }
   };
 </script>

@@ -179,7 +179,7 @@
         let that = this;
         this.$http({
           method: "post",
-          url: url + "/browser-productItemNameFindPage",
+          url: url + "/clientFindMaterialListAndPaged",
           data: that.search
         }).then(function(res) {
           that.loading = false;

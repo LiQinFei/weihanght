@@ -17,21 +17,19 @@
         </el-form-item>
       </el-form>
     </div>
-
+    <!--分类列表-->
     <el-table ref="multipleTable" @selection-change="handleSelectionChange" :data="tableData.dataList" border style="width: 100%" v-loading="loading">
-      <el-table-column type="index" width="50">
+      <el-table-column type="index" width="51">
       </el-table-column>
       <el-table-column prop="cname" label="类别名称" width="140">
       </el-table-column>
       <el-table-column prop="parentName" label="上级分类" width="100">
       </el-table-column>
-
       <el-table-column prop="createDate" label="创建日期" width="160">
       </el-table-column>
-
       <el-table-column prop="modifyDate" label="修改日期" width="160">
       </el-table-column>
-      <el-table-column prop="description" label="备注">
+      <el-table-column prop="description" min-width="150" label="备注">
       </el-table-column>
 
       <el-table-column fixed="right" label="操作" width="150">
@@ -47,15 +45,15 @@
     </el-pagination>
     <!-- 编辑弹出层 -->
     <el-dialog class="Edit" title="类别编辑" :visible.sync="dialogFormVisible">
-      <el-form :model="form">
+      <el-form :model="form" :rules="rules" ref="form">
         <el-form-item label="上级类别:" :label-width="formLabelWidth">
           <el-input disabled v-model="form.parentName" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="类别名称:" :label-width="formLabelWidth">
+        <el-form-item label="类别名称:" :label-width="formLabelWidth" prop="cname">
           <el-input v-model="form.cname" auto-complete="off"></el-input>
         </el-form-item>
 
-        <el-form-item label="排序" :label-width="formLabelWidth">
+        <el-form-item label="排序" :label-width="formLabelWidth" prop="sort">
           <el-input v-model="form.sort" auto-complete="off"></el-input>
         </el-form-item>
       </el-form>
@@ -67,21 +65,21 @@
 
     <!-- 新增类别 -->
     <el-dialog title="新增类别" :visible.sync="newVisible">
-      <el-form :model="newEdit">
+      <el-form :model="newEdit" :rules="rules" ref="newEdit">
         <el-form-item label="上级分类:" :label-width="formLabelWidth">
           <el-select v-model="newEdit.parentId" placeholder="请选择">
             <el-option v-for="item in newList" :key="item.categoryId" :label="item.cname" :value="item.categoryId">
             </el-option>
           </el-select>
-          <span style="color:red">*空代表该类别为父类型</span>
+          <span style="color:red">空代表该类别为父类型</span>
         </el-form-item>
-        <el-form-item label="类别名称：" :label-width="formLabelWidth">
+        <el-form-item label="类别名称：" :label-width="formLabelWidth" prop="cname">
           <el-input v-model="newEdit.cname" auto-complete="off"></el-input>
         </el-form-item>
 
-        <el-form-item label="排序" :label-width="formLabelWidth">
+        <el-form-item label="排序" :label-width="formLabelWidth" prop="sort">
           <el-input v-model="newEdit.sort" auto-complete="off"></el-input>
-          <span style="color:red">*数字越大越靠前</span>
+          <span style="color:red">数字越大越靠前</span>
         </el-form-item>
 
       </el-form>
@@ -106,12 +104,10 @@
         newVisible: false,
         formLabelWidth: "120px",
         form: {},
-//      value: "",
         newEdit: {
           parentId: '',
           cname: '',
-          sort: ''
-
+          sort: ""
         },
         newList: [],
         search: {
@@ -120,7 +116,15 @@
           cname: ""
         },
         tableData: [],
-        multipleSelection: []
+        multipleSelection: [],
+        rules: {
+          cname: [
+            {required: true, message: "不能为空"}
+          ],
+          sort: [
+            {required: true, message: "不能为空"}
+          ]
+        }
       };
     },
     created() {
@@ -137,7 +141,6 @@
         }).then(function (res) {
           that.loading = false;
           that.tableData = JSON.parse(res.data);
-
         });
       },
       getNewList() {
@@ -171,49 +174,59 @@
       },
       //新增商品
       clientSaveSortInfo() {
-        // this.value = ''
-//      this.newEdit.parentId = this.value;
-
         let that = this;
-        this.$http({
-          method: "post",
-          url: url + "/clientSaveSortInfo",
-          data: that.newEdit
-        }).then(function (res) {
-          that.value = "";
-          let data = JSON.parse(res.data);
-          if (data.apiStatus == 1) {
-            that.newVisible = false;
-            that.$message({
-              message: data.msg,
-              type: "success"
+        this.$refs.newEdit.validate(valid => {
+          if (valid) {
+            this.$http({
+              method: "post",
+              url: url + "/clientSaveSortInfo",
+              data: that.newEdit
+            }).then(function (res) {
+              that.value = "";
+              let data = JSON.parse(res.data);
+              if (data.apiStatus == 1) {
+                that.newVisible = false;
+                that.getList()
+                that.$message({
+                  message: data.msg,
+                  type: "success"
+                });
+              } else {
+                that.$message.error(data.msg);
+              }
             });
           } else {
-            that.$message.error(data.msg);
+            that.$message.error("请填写正确的格式");
           }
-        });
+        })
       },
       // 编辑分类信息
       clientProductModifySortInfo() {
         let that = this;
-        this.$http({
-          method: "post",
-          url: url + "/clientProductModifySortInfo",
-          data: that.form
-        }).then(function (res) {
-          let data = JSON.parse(res.data);
-          if (data.apiStatus == 1) {
-            that.form = {};
-            that.dialogFormVisible = false;
-            that.getList();
-            that.$message({
-              message: data.msg,
-              type: "success"
+        this.$refs.form.validate(valid => {
+          if(valid){
+            this.$http({
+              method: "post",
+              url: url + "/clientProductModifySortInfo",
+              data: that.form
+            }).then(function (res) {
+              let data = JSON.parse(res.data);
+              if (data.apiStatus == 1) {
+                that.form = {};
+                that.dialogFormVisible = false;
+                that.getList();
+                that.$message({
+                  message: data.msg,
+                  type: "success"
+                });
+              } else {
+                that.$message.error(data.msg);
+              }
             });
-          } else {
-            that.$message.error(data.msg);
+          }else {
+            that.$message.error("请填写正确的格式");
           }
-        });
+        })
       },
       del(row) {
         let that = this;
@@ -261,11 +274,9 @@
           _item[i] = row[i];
         }
         this.form = _item;
-        console.log(row);
       },
       handleSelectionChange(val) {
         this.multipleSelection = val;
-        // console.log(this.multipleSelection)
       }
     }
   };

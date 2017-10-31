@@ -96,12 +96,12 @@
             <el-col :span="10">
                 <el-form-item label="广告类型:" :label-width="formLabelWidth">
                   <el-select v-model="form.adType" @change="isGood" @visible-change="isUpdwon">
-                    <el-option label="链接广告" value="0"></el-option>
-                    <el-option label="商品广告" value="1"></el-option>
+                    <el-option label="链接广告" :value="1"></el-option>
+                    <el-option label="商品广告" :value="2"></el-option>
                   </el-select>
               </el-form-item>
             </el-col>
-          <el-col :span="10" v-if="form.adType == 1">
+          <el-col :span="10" v-if="form.adType == 2">
                 <el-form-item label="广告商品:" :label-width="formLabelWidth">
                   <el-select v-model="form.objId">
                   <el-option v-for="(item,index) in goodsList.dataList" :key="index" :label="item.productName" :value="item.productId">
@@ -192,12 +192,12 @@
             <el-col :span="10">
                 <el-form-item label="广告类型:" :label-width="formLabelWidth">
                   <el-select v-model="editData.adType" @change="isGood" @visible-change="isUpdwon">
-                    <el-option label="链接广告" :value="0"></el-option>
-                    <el-option label="商品广告" :value="1"></el-option>
+                    <el-option label="链接广告" :value="1"></el-option>
+                    <el-option label="商品广告" :value="2"></el-option>
                   </el-select>
               </el-form-item>
             </el-col>
-          <el-col :span="10" v-if="editData.adType == 1">
+          <el-col :span="10" v-if="editData.adType == 2">
                 <el-form-item label="广告商品:" :label-width="formLabelWidth">
                   <el-select v-model="editData.objId">
                   <el-option v-for="(item,index) in goodsList.dataList" :key="index" :label="item.productName" :value="item.productId">
@@ -719,7 +719,7 @@ export default {
     },
     isUpdwon(data) {
       if (data == false) {
-        if (this.adType == 1) {
+        if (this.adType == 2) {
           let that = this;
           this.goodsSetVisible = true;
           this.$http({

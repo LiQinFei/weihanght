@@ -2,9 +2,11 @@
   <div class="box">
     <div class="header">
       <h1>威航后台管理系统</h1>
+      <div class="right">
+        <el-button type="text" @click="closes">退出</el-button>
+      </div>
     </div>
     <div class="container">
-
       <div width="200px" class="aside">
         <el-menu :default-active="active" router unique-opened>
           <el-submenu v-for="(item,index) in menu" :index="item.titleList.index" v-if="item.titleList.isShow" :key="index">
@@ -162,11 +164,11 @@
               icon: "el-icon-erp-xitongguanli"
             },
             itemList: [
-              {name: "菜单设置", path: "/menuSet", is: [99], isShow: 0},
+//              {name: "菜单设置", path: "/menuSet", is: [99], isShow: 0},
               {name: "角色管理", path: "/roleManages", is: [99], isShow: 0},
               {name: "用户管理", path: "/userManage", is: [99], isShow: 0},
               {name: "参数设置", path: "/parameterSet", is: [99], isShow: 0},
-              {name: "基础数据", path: "/basicsData", is: [99], isShow: 0},
+//              {name: "基础数据", path: "/basicsData", is: [99], isShow: 0},
               {name: "日志管理", path: "/log", is: [99], isShow: 0}
             ]
           }
@@ -183,7 +185,11 @@
     },
 
     methods: {
-      //判断标题是否
+      closes() {
+        sessionStorage.removeItem('user')
+        this.$router.push('/login')
+        //判断标题是否
+      },
       titShow() {
         let allList = this.menu;
         let roles = this.roles;
@@ -236,7 +242,16 @@
       width: 100%;
       h1 {
         margin-left: 20px;
+        width: 50%;
+        float: left;
       }
+      .right{
+        float: right;
+
+        margin-right: 30px;
+      }
+
+
     }
     .container {
       width: 100%;
